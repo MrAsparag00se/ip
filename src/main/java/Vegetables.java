@@ -1,12 +1,12 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Vegetables {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Array to store tasks, allowing up to 100 tasks
-        Task[] tasks = new Task[100];
-        int taskCount = 0; // Counter for number of tasks
+        // ArrayList to store tasks (allows dynamic sizing)
+        ArrayList<Task> tasks = new ArrayList<>();
 
         // New ASCII Art for "VEGETABLES"
         String veggieLogo =
@@ -37,18 +37,19 @@ public class Vegetables {
                 System.out.println(" - list: Displays all tasks in the list.");
                 System.out.println(" - mark [Task number]: Marks a task as done.");
                 System.out.println(" - unmark [Task number]: Unmarks a task as not done.");
+                System.out.println(" - delete [Task number]: Deletes a task from the list.");
                 System.out.println(" - bye: Exits the program.");
                 System.out.println("____________________________________________________________");
             }
             // Handle 'list' command to display all tasks
             else if (userInput.equalsIgnoreCase("list")) {
                 System.out.println("____________________________________________________________");
-                if (taskCount == 0) {
+                if (tasks.size() == 0) {
                     System.out.println("No tasks added.");
                 } else {
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println((i + 1) + "." + tasks[i].toString());
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println((i + 1) + "." + tasks.get(i).toString());
                     }
                 }
                 System.out.println("____________________________________________________________");
@@ -60,12 +61,11 @@ public class Vegetables {
                         throw new VeggieException("Correct format: todo [Task description]");
                     }
                     String taskDescription = userInput.substring(5).trim();
-                    tasks[taskCount] = new ToDo(taskDescription);
-                    taskCount++;
+                    tasks.add(new ToDo(taskDescription));
                     System.out.println("____________________________________________________________");
                     System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1]);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("   " + tasks.get(tasks.size() - 1));
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println("____________________________________________________________");
                 } catch (VeggieException e) {
                     System.out.println("____________________________________________________________");
@@ -81,12 +81,11 @@ public class Vegetables {
                     String[] parts = userInput.split("/by");
                     String taskDescription = parts[0].substring(9).trim();
                     String by = parts.length > 1 ? parts[1].trim() : "";
-                    tasks[taskCount] = new Deadline(taskDescription, by);
-                    taskCount++;
+                    tasks.add(new Deadline(taskDescription, by));
                     System.out.println("____________________________________________________________");
                     System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1]);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("   " + tasks.get(tasks.size() - 1));
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println("____________________________________________________________");
                 } catch (VeggieException e) {
                     System.out.println("____________________________________________________________");
@@ -103,12 +102,11 @@ public class Vegetables {
                     String taskDescription = parts[0].substring(6).trim();
                     String from = parts.length > 1 ? parts[1].split("/to")[0].trim() : "";
                     String to = parts.length > 1 ? parts[1].split("/to")[1].trim() : "";
-                    tasks[taskCount] = new Event(taskDescription, from, to);
-                    taskCount++;
+                    tasks.add(new Event(taskDescription, from, to));
                     System.out.println("____________________________________________________________");
                     System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1]);
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("   " + tasks.get(tasks.size() - 1));
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println("____________________________________________________________");
                 } catch (VeggieException e) {
                     System.out.println("____________________________________________________________");
@@ -120,13 +118,13 @@ public class Vegetables {
             else if (userInput.startsWith("mark")) {
                 try {
                     int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
-                    if (taskNumber < 1 || taskNumber > taskCount) {
+                    if (taskNumber < 1 || taskNumber > tasks.size()) {
                         throw new VeggieException("Task number out of range.");
                     }
-                    tasks[taskNumber - 1].markAsDone();
+                    tasks.get(taskNumber - 1).markAsDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + tasks[taskNumber - 1]);
+                    System.out.println("   " + tasks.get(taskNumber - 1));
                     System.out.println("____________________________________________________________");
                 } catch (Exception e) {
                     System.out.println("____________________________________________________________");
@@ -138,13 +136,32 @@ public class Vegetables {
             else if (userInput.startsWith("unmark")) {
                 try {
                     int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
-                    if (taskNumber < 1 || taskNumber > taskCount) {
+                    if (taskNumber < 1 || taskNumber > tasks.size()) {
                         throw new VeggieException("Task number out of range.");
                     }
-                    tasks[taskNumber - 1].markAsNotDone();
+                    tasks.get(taskNumber - 1).markAsNotDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks[taskNumber - 1]);
+                    System.out.println("   " + tasks.get(taskNumber - 1));
+                    System.out.println("____________________________________________________________");
+                } catch (Exception e) {
+                    System.out.println("____________________________________________________________");
+                    System.out.println(" Error: " + e.getMessage());
+                    System.out.println("____________________________________________________________");
+                }
+            }
+            // Handle 'delete' command to remove tasks
+            else if (userInput.startsWith("delete")) {
+                try {
+                    int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
+                    if (taskNumber < 1 || taskNumber > tasks.size()) {
+                        throw new VeggieException("Task number out of range.");
+                    }
+                    Task removedTask = tasks.remove(taskNumber - 1);
+                    System.out.println("____________________________________________________________");
+                    System.out.println(" Noted. I've removed this task:");
+                    System.out.println("   " + removedTask);
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println("____________________________________________________________");
                 } catch (Exception e) {
                     System.out.println("____________________________________________________________");
@@ -188,11 +205,11 @@ abstract class Task {
         this.description = description;
         this.isDone = false; // New tasks are not done by default
     }
-
+/*
     public String getDescription() {
         return description;
     }
-
+*/
     public void markAsDone() {
         isDone = true;
     }
@@ -202,27 +219,25 @@ abstract class Task {
     }
 
     public String getStatusIcon() {
-        return (isDone ? "[X]" : "[ ]"); // Return [X] if done, [ ] if not done
-    }
-
-    public abstract String toString(); // Abstract method to be implemented by subclasses
-}
-
-// ToDo class - represents a task without a date/time
-class ToDo extends Task {
-    public ToDo(String description) {
-        super(description);
+        return isDone ? "[X]" : "[ ]";
     }
 
     @Override
     public String toString() {
-        return "[T]" + getStatusIcon() + " " + description;
+        return getStatusIcon() + " " + description;
+    }
+}
+
+// ToDo class - represents a simple task
+class ToDo extends Task {
+    public ToDo(String description) {
+        super(description);
     }
 }
 
 // Deadline class - represents a task with a deadline
 class Deadline extends Task {
-    private String by;
+    protected String by;
 
     public Deadline(String description, String by) {
         super(description);
@@ -237,8 +252,8 @@ class Deadline extends Task {
 
 // Event class - represents a task with a start and end time
 class Event extends Task {
-    private String from;
-    private String to;
+    private final String from;
+    private final String to;
 
     public Event(String description, String from, String to) {
         super(description);
