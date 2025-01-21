@@ -1,0 +1,15 @@
+hello
+help
+todo
+event
+deadline
+todo test
+event test /from now /to later
+deadline test /by later
+list
+mark 1
+unmark 2
+unmark 1
+delete 1
+delete 5
+bye
