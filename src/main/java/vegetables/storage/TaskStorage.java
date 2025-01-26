@@ -31,7 +31,7 @@ public class TaskStorage {
         try {
             // Ensure the directory exists
             File file = new File(FILE_PATH);
-            //file.getParentFile().mkdirs();  // Create parent directories if they don't exist
+            file.getParentFile().mkdirs();  // Create parent directories if they don't exist
 
             // Now write the tasks to the file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {

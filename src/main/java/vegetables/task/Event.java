@@ -22,6 +22,20 @@ public class Event extends Task {
     }
 
     /**
+     * Getters for from and to properties of Event.
+     * Only for use by testers.
+     * @return from / to.
+     */
+    public String getFrom() {
+        return from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+
+    /**
      * Constructs a new Event task with the specified description, start time, end time, and completion status.
      *
      * @param description The description of the event.
