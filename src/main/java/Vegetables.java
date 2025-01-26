@@ -506,9 +506,9 @@ public class Vegetables {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        TaskManager taskManager = new TaskManager();
         TaskStorage taskStorage = new TaskStorage();
         ArrayList<Task> tasks = taskStorage.loadTasks();
+        TaskManager taskManager = new TaskManager(tasks);
 
         String veggieLogo =
                 " _  _  ____  ___  ____  ____   __    ____  __    ____  ___ \n"
