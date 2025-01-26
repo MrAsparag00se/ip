@@ -23,37 +23,29 @@ public class Vegetables {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Load tasks from file
         ArrayList<Task> tasks = loadTasks();
 
-        // ASCII Art for "VEGETABLES"
         String veggieLogo =
                 " _  _  ____  ___  ____  ____   __    ____  __    ____  ___ \n"
                         + "( \\/ )( ___)/ __)( ___)(_  _) /__\\  (  _ \\(  )  ( ___)/ __)\n"
                         + " \\  /  )__)( (_-. )__)   )(  /(__)\\  ) _ < )(__  )__) \\__ \\\n"
                         + "  \\/  (____)\\___/(____) (__)(__)(__)(____/(____)(____)(___/ \n";
 
-        // Print greeting and ASCII Art
         System.out.println("____________________________________________________________");
         System.out.println(" Hello! I'm Vegetables");
         System.out.println(veggieLogo);
         System.out.println(" What can I do for you?");
         System.out.println("____________________________________________________________");
 
-        // Infinite loop to process user input
         while (true) {
-            // Read user input
             String userInput = scanner.nextLine();
 
-            // Handle 'help' command to display available commands
             if (userInput.equalsIgnoreCase("help")) {
                 displayHelp();
             }
-            // Handle 'list' command to display all tasks
             else if (userInput.equalsIgnoreCase("list")) {
                 listTasks(tasks);
             }
-            // Handle task addition (ToDo, Deadline, Event)
             else if (userInput.startsWith("todo")) {
                 handleAddToDo(userInput, tasks);
             }
@@ -63,23 +55,18 @@ public class Vegetables {
             else if (userInput.startsWith("event")) {
                 handleAddEvent(userInput, tasks);
             }
-            // Handle 'mark' command to mark tasks as done
             else if (userInput.startsWith("mark")) {
                 handleMarkTask(userInput, tasks);
             }
-            // Handle 'unmark' command to unmark tasks
             else if (userInput.startsWith("unmark")) {
                 handleUnmarkTask(userInput, tasks);
             }
-            else if (userInput.startsWith("find")) { // Add to help
+            else if (userInput.startsWith("find")) {
                 handleFindTask(userInput, tasks);
             }
-
-            // Handle 'delete' command to remove tasks
             else if (userInput.startsWith("delete")) {
                 handleDeleteTask(userInput, tasks);
             }
-            // Handle 'bye' command to exit the program
             else if (userInput.equalsIgnoreCase("bye")) {
                 System.out.println("____________________________________________________________");
                 System.out.println(" Bye. Hope to see you again soon!");
@@ -87,19 +74,15 @@ public class Vegetables {
                 saveTasks(tasks);  // Save tasks when exiting
                 break; // Break the loop and exit the program
             }
-            // Handle unrecognized commands
             else {
                 System.out.println("____________________________________________________________");
                 System.out.println(" Unrecognised command! Please try again.");
                 System.out.println("____________________________________________________________");
             }
         }
-
-        // Close scanner
         scanner.close();
     }
 
-    // Display help information
     private static void displayHelp() {
         System.out.println("____________________________________________________________");
         System.out.println(" Available Commands:");
@@ -109,12 +92,12 @@ public class Vegetables {
         System.out.println(" - list: Displays all tasks in the list.");
         System.out.println(" - mark [Task number]: Marks a task as done.");
         System.out.println(" - unmark [Task number]: Unmarks a task as not done.");
+        System.out.println(" - find [Date]: Finds a task by date.");
         System.out.println(" - delete [Task number]: Deletes a task from the list.");
         System.out.println(" - bye: Exits the program.");
         System.out.println("____________________________________________________________");
     }
 
-    // List all tasks
     private static void listTasks(ArrayList<Task> tasks) {
         System.out.println("____________________________________________________________");
         if (tasks.size() == 0) {
@@ -128,7 +111,6 @@ public class Vegetables {
         System.out.println("____________________________________________________________");
     }
 
-    // Add a todo task
     private static void handleAddToDo(String userInput, ArrayList<Task> tasks) {
         try {
             if (userInput.length() <= 5) {
@@ -151,7 +133,6 @@ public class Vegetables {
         }
     }
 
-    // Add a deadline task
     private static void handleAddDeadline(String userInput, ArrayList<Task> tasks) {
         try {
             if (!userInput.contains("/by")) {
@@ -175,7 +156,6 @@ public class Vegetables {
         }
     }
 
-    // Add an event task
     private static void handleAddEvent(String userInput, ArrayList<Task> tasks) {
         try {
             if (!userInput.contains("/from") || !userInput.contains("/to")) {
@@ -200,7 +180,6 @@ public class Vegetables {
         }
     }
 
-    // Mark a task as done
     private static void handleMarkTask(String userInput, ArrayList<Task> tasks) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
@@ -225,7 +204,6 @@ public class Vegetables {
         }
     }
 
-    // Unmark a task
     private static void handleUnmarkTask(String userInput, ArrayList<Task> tasks) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
@@ -250,11 +228,10 @@ public class Vegetables {
         }
     }
 
-    // Search tasks by keyword
     private static void handleFindTask(String userInput, ArrayList<Task> tasks) {
         try {
             if (userInput.length() <= 5) {
-                throw new VeggieException("Please provide a keyword to search. Correct format: find [keyword]");
+                throw new VeggieException("Please provide a date to search. Correct format: find [date]");
             }
 
             String keyword = userInput.substring(5).trim().toLowerCase(); // Extract the keyword
@@ -286,7 +263,6 @@ public class Vegetables {
         }
     }
 
-    // Delete a task
     private static void handleDeleteTask(String userInput, ArrayList<Task> tasks) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
@@ -312,7 +288,6 @@ public class Vegetables {
         }
     }
 
-    // Save tasks to the file
     private static void saveTasks(ArrayList<Task> tasks) {
         try {
             // Create the file object and ensure that the parent directories exist
@@ -335,7 +310,6 @@ public class Vegetables {
         }
     }
 
-    // Load tasks from file
     private static ArrayList<Task> loadTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
         try {
