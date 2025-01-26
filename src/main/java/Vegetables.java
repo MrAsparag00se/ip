@@ -1,10 +1,13 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 // Main class for managing tasks
 public class Vegetables {
-    private static final String FILE_PATH = "./data/duke.txt";  // File path for storing tasks
+    private static final String FILE_PATH = "./tasklist/veggied.txt";  // File path for storing tasks
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -137,11 +140,11 @@ public class Vegetables {
     private static void handleAddDeadline(String userInput, ArrayList<Task> tasks) {
         try {
             if (!userInput.contains("/by")) {
-                throw new VeggieException("Correct format: deadline [Task description] /by [Date/time]");
+                throw new VeggieException("Correct format: deadline [Task description] /by [yyyy-MM-dd HH:mm]");
             }
             String[] parts = userInput.split("/by");
             String taskDescription = parts[0].substring(9).trim();
-            String by = parts.length > 1 ? parts[1].trim() : "";
+            String by = parts[1].trim();
             Task newTask = new Deadline(taskDescription, by);
             tasks.add(newTask);
             System.out.println("____________________________________________________________");
@@ -296,7 +299,7 @@ public class Vegetables {
                 tasks.add(task);
             }
             fileScanner.close();
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | VeggieException e) {
             System.out.println("____________________________________________________________");
             System.out.println(" Error loading tasks: " + e.getMessage());
             System.out.println("____________________________________________________________");
@@ -330,7 +333,7 @@ abstract class Task {
         return "[" + (isDone ? "X" : " ") + "] " + description;
     }
 
-    public static Task fromFileString(String taskString) {
+    public static Task fromFileString(String taskString) throws VeggieException {
         String[] parts = taskString.split(" \\| ");
         String taskType = parts[0];
         boolean isDone = parts[1].equals("X");
@@ -371,31 +374,35 @@ class ToDo extends Task {
 }
 
 class Deadline extends Task {
-    private String by;
+    private LocalDateTime by;
+    private static final DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
 
-    public Deadline(String description, String by) {
+    public Deadline(String description, String by) throws VeggieException {
         super(description);
-        this.by = by;
+        try {
+            this.by = LocalDateTime.parse(by, inputFormatter);
+        } catch (DateTimeParseException e) {
+            throw new VeggieException("Invalid date format! Use yyyy-MM-dd HH:mm (e.g., 2023-01-22 18:00)");
+        }
     }
 
-    // Add constructor with isDone parameter
-    public Deadline(String description, String by, boolean isDone) {
-        super(description);
-        this.by = by;
+    public Deadline(String description, String by, boolean isDone) throws VeggieException {
+        this(description, by);
         this.isDone = isDone;
     }
 
     @Override
     public String toString() {
-        return "D [" + (isDone ? "X" : " ") + "] " + description + " by: " + by;
+        return "D [" + (isDone ? "X" : " ") + "] " + description + " (by: " + by.format(displayFormatter) + ")";
     }
-
 
     @Override
     public String toFileString() {
-        return "DEADLINE | " + (isDone ? "X" : "0") + " | " + description + " | " + by;
+        return "DEADLINE | " + (isDone ? "X" : "0") + " | " + description + " | " + by.format(inputFormatter);
     }
 }
+
 
 class Event extends Task {
     private String from;
