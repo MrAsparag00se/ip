@@ -5,10 +5,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-// Main class for managing tasks
+/**
+ * Runs the Vegetables program, that supports creating, listing,
+ * marking, unmarking, deleting, and finding tasks.
+ * Tasks can be of type ToDo, Deadline, or Event.
+ * The program uses a file to persist tasks between sessions.
+ */
 public class Vegetables {
     private static final String FILE_PATH = "./tasklist/veggied.txt";  // File path for storing tasks
 
+    /**
+     * Entry point of the Vegetables program.
+     * Displays a welcome message and runs a command loop to process user input.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -60,6 +71,10 @@ public class Vegetables {
             else if (userInput.startsWith("unmark")) {
                 handleUnmarkTask(userInput, tasks);
             }
+            else if (userInput.startsWith("find")) { // Add to help
+                handleFindTask(userInput, tasks);
+            }
+
             // Handle 'delete' command to remove tasks
             else if (userInput.startsWith("delete")) {
                 handleDeleteTask(userInput, tasks);
@@ -235,6 +250,42 @@ public class Vegetables {
         }
     }
 
+    // Search tasks by keyword
+    private static void handleFindTask(String userInput, ArrayList<Task> tasks) {
+        try {
+            if (userInput.length() <= 5) {
+                throw new VeggieException("Please provide a keyword to search. Correct format: find [keyword]");
+            }
+
+            String keyword = userInput.substring(5).trim().toLowerCase(); // Extract the keyword
+            ArrayList<Task> matchingTasks = new ArrayList<>(); // List for storing matching tasks
+
+            // Iterate over tasks and check for the keyword
+            for (Task task : tasks) {
+                if (task.description.toLowerCase().contains(keyword)) {
+                    matchingTasks.add(task);
+                }
+            }
+
+            // Print matching tasks
+            System.out.println("____________________________________________________________");
+            if (matchingTasks.isEmpty()) {
+                System.out.println("No matching tasks found.");
+            } else {
+                System.out.println("Here are the matching tasks in your list:");
+                for (int i = 0; i < matchingTasks.size(); i++) {
+                    System.out.println((i + 1) + "." + matchingTasks.get(i).toString());
+                }
+            }
+            System.out.println("____________________________________________________________");
+
+        } catch (VeggieException e) {
+            System.out.println("____________________________________________________________");
+            System.out.println(e.getMessage());
+            System.out.println("____________________________________________________________");
+        }
+    }
+
     // Delete a task
     private static void handleDeleteTask(String userInput, ArrayList<Task> tasks) {
         try {
@@ -308,31 +359,65 @@ public class Vegetables {
     }
 }
 
-// Task class and its subclasses
+/**
+ * Abstract class representing a task with a description and a completion status.
+ * Provides methods for marking a task as done or not done, converting tasks to a file string,
+ * and reconstructing tasks from a file string.
+ */
 abstract class Task {
     protected String description;
     protected boolean isDone;
 
+    /**
+     * Constructs a new Task with the specified description.
+     * The task is initially marked as not done.
+     *
+     * @param description The description of the task.
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
 
+    /**
+     * Converts the task to a string representation suitable for saving to a file.
+     *
+     * @return A string representation of the task in the file's format.
+     */
     public abstract String toFileString(); // Save task to file
 
+     /**
+     * Marks the task as done.
+     */
     public void markAsDone() {
         isDone = true;
     }
 
+    /**
+     * Marks the task as not done.
+     */
     public void markAsNotDone() {
         isDone = false;
     }
 
+    /**
+     * Returns a string representation of the task, including its completion status and description.
+     *
+     * @return A string representation of the task.
+     */
     @Override
     public String toString() {
         return "[" + (isDone ? "X" : " ") + "] " + description;
     }
 
+    /**
+     * Reconstructs a task from its string representation in file format.
+     * The format of the string is expected to be "TYPE | STATUS | DESCRIPTION [| ADDITIONAL INFO...]".
+     *
+     * @param taskString The string representation of the task.
+     * @return A reconstructed Task object.
+     * @throws VeggieException If the string format is invalid or the task type is unrecognized.
+     */
     public static Task fromFileString(String taskString) throws VeggieException {
         String[] parts = taskString.split(" \\| ");
         String taskType = parts[0];
@@ -351,33 +436,74 @@ abstract class Task {
     }
 }
 
+/**
+ * Represents a "ToDo" task, which has no associated time constraints.
+ * This class is a subclass of the abstract Task class.
+ */
 class ToDo extends Task {
+    /**
+     * Constructs a new ToDo task with the specified description.
+     * The task is initially marked as not done.
+     *
+     * @param description The description of the ToDo task.
+     */
     public ToDo(String description) {
         super(description);
     }
 
-    // Add constructor with isDone parameter
+    /**
+     * Constructs a new ToDo task with the specified description and completion status.
+     *
+     * @param description The description of the ToDo task.
+     * @param isDone      The completion status of the ToDo task. {@code true} if the task is done,
+     *                    {@code false} otherwise.
+     */
     public ToDo(String description, boolean isDone) {
         super(description);
         this.isDone = isDone;
     }
 
+    /**
+     * Returns a string representation of the ToDo task, including its type, completion status, and description.
+     * The format is: "T [status] description".
+     *
+     * @return A string representation of the ToDo task.
+     */
     @Override
     public String toString() {
         return "T [" + (isDone ? "X" : " ") + "] " + description;
     }
 
+    /**
+     * Converts the ToDo task to a string representation suitable for saving to a file.
+     * The format is: "TODO | status | description".
+     *
+     * - `status`: "X" if the task is done, "0" otherwise.
+     *
+     * @return A string representation of the ToDo task in file format.
+     */
     @Override
     public String toFileString() {
         return "TODO | " + (isDone ? "X" : "0") + " | " + description;
     }
 }
 
+/**
+ * Represents a 'Deadline' task.
+ * The deadline is stored as a LocalDateTime object.
+ */
 class Deadline extends Task {
     private LocalDateTime by;
     private static final DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private static final DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
 
+    /**
+     * Constructs a new Deadline task with the specified description and deadline.
+     *
+     * @param description The description of the deadline task.
+     * @param by          The deadline in the format "yyyy-MM-dd HH:mm" (e.g., "2025-01-22 18:00").
+     * @throws VeggieException If the provided deadline is not in the expected format.
+     */
     public Deadline(String description, String by) throws VeggieException {
         super(description);
         try {
@@ -387,34 +513,73 @@ class Deadline extends Task {
         }
     }
 
+    /**
+     * Constructs a new Deadline task with the specified description, deadline, and completion status.
+     *
+     * @param description The description of the deadline task.
+     * @param by          The deadline in the format "yyyy-MM-dd HH:mm".
+     * @param isDone      The completion status of the deadline task. {@code true} if the task is done, {@code false} otherwise.
+     * @throws VeggieException If the provided deadline is not in the expected format.
+     */
     public Deadline(String description, String by, boolean isDone) throws VeggieException {
         this(description, by);
         this.isDone = isDone;
     }
 
+    /**
+     * Returns a string representation of the Deadline task, including its type, completion status, description, and deadline.
+     * The format is: "D [status] description (by: formatted deadline)".
+     *
+     * @return A string representation of the Deadline task.
+     */
     @Override
     public String toString() {
         return "D [" + (isDone ? "X" : " ") + "] " + description + " (by: " + by.format(displayFormatter) + ")";
     }
 
+    /**
+     * Converts the Deadline task to a string representation suitable for saving to a file.
+     * The format is: "DEADLINE | status | description | deadline".
+     *
+     * - `status`: "X" if the task is done, "0" otherwise.
+     *
+     * @return A string representation of the Deadline task in file format.
+     */
     @Override
     public String toFileString() {
         return "DEADLINE | " + (isDone ? "X" : "0") + " | " + description + " | " + by.format(inputFormatter);
     }
 }
 
-
+/**
+ * Represents an 'Event' task.
+ * An event has a start time and an end time.
+ */
 class Event extends Task {
     private String from;
     private String to;
 
+    /**
+     * Constructs a new Event task with the specified description, start time, and end time.
+     *
+     * @param description The description of the event.
+     * @param from        The start time of the event.
+     * @param to          The end time of the event.
+     */
     public Event(String description, String from, String to) {
         super(description);
         this.from = from;
         this.to = to;
     }
 
-    // Add constructor with isDone parameter
+    /**
+     * Constructs a new Event task with the specified description, start time, end time, and completion status.
+     *
+     * @param description The description of the event.
+     * @param from        The start time of the event.
+     * @param to          The end time of the event.
+     * @param isDone      The completion status of the event. {@code true} if the task is done, {@code false} otherwise.
+     */
     public Event(String description, String from, String to, boolean isDone) {
         super(description);
         this.from = from;
@@ -422,20 +587,42 @@ class Event extends Task {
         this.isDone = isDone;
     }
 
+    /**
+     * Returns a string representation of the Event task, including its type, completion status, description, start time, and end time.
+     * The format is: "E [status] description from: start time to: end time".
+     *
+     * @return A string representation of the Event task.
+     */
     @Override
     public String toString() {
         return "E [" + (isDone ? "X" : " ") + "] " + description + " from: " + from + " to: " + to;
     }
 
-
+    /**
+     * Converts the Event task to a string representation suitable for saving to a file.
+     * The format is: "EVENT | status | description | start time | end time".
+     *
+     * - `status`: "X" if the task is done, "0" otherwise.
+     *
+     * @return A string representation of the Event task in file format.
+     */
     @Override
     public String toFileString() {
         return "EVENT | " + (isDone ? "X" : "0") + " | " + description + " | " + from + " | " + to;
     }
 }
 
-// Custom exception class for input validation
+/**
+ * Custom exception class for input validation.
+ * This exception is used to handle errors specific to the application's logic.
+ */
 class VeggieException extends Exception {
+    /**
+     * Constructs a new {@code VeggieException} with the specified detail message.
+     * The message provides additional information about the exception cause.
+     *
+     * @param message the detail message describing the exception.
+     */
     public VeggieException(String message) {
         super(message);
     }
