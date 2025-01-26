@@ -1,6 +1,0 @@
-TODO | X | now
-EVENT | 0 | blabla | 1212-12-12 12:12 | 1212-12-12 12:12
-TODO | 0 | another thing now
-TODO | 0 | now
-TODO | 0 | later
-DEADLINE | 0 | wowowie | 1212-12-12 12:12
