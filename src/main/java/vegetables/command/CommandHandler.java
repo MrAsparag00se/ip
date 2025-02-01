@@ -34,70 +34,73 @@ public class CommandHandler {
      *
      * @param userInput The command input provided by the user.
      */
-    public void executeCommand(String userInput) {
+    public String executeCommand(String userInput) {
+        String result;
         if (userInput.equalsIgnoreCase("help")) {
-            displayHelp();
+            result = displayHelp();
         } else if (userInput.equalsIgnoreCase("list")) {
-            listTasks();
+            result = listTasks();
         } else if (userInput.startsWith("todo")) {
-            handleAddToDo(userInput);
+            result = handleAddToDo(userInput);
         } else if (userInput.startsWith("deadline")) {
-            handleAddDeadline(userInput);
+            result = handleAddDeadline(userInput);
         } else if (userInput.startsWith("event")) {
-            handleAddEvent(userInput, taskManager);
+            result = handleAddEvent(userInput, taskManager);
         } else if (userInput.startsWith("mark")) {
-            handleMarkTask(userInput);
+            result = handleMarkTask(userInput);
         } else if (userInput.startsWith("unmark")) {
-            handleUnmarkTask(userInput);
+            result = handleUnmarkTask(userInput);
         } else if (userInput.startsWith("find")) {
-            handleFindTask(userInput);
+            result = handleFindTask(userInput);
         } else if (userInput.startsWith("delete")) {
-            handleDeleteTask(userInput);
+            result = handleDeleteTask(userInput);
         } else if (userInput.equalsIgnoreCase("bye")) {
-            System.out.println("Bye. Hope to see you again soon!");
             taskStorage.saveTasks(taskManager.getTasks());
+            result = "Bye. Hope to see you again soon!";
         } else {
-            System.out.println("Unrecognised command!");
+            result = "Unrecognised command!";
         }
+        return result;
     }
 
-    private void displayHelp() {
-        System.out.println("____________________________________________________________");
-        System.out.println(" Available Commands:");
-        System.out.println(" - todo [Task description]: Adds a task without a deadline.");
-        System.out.println(" - deadline [Task description] /by [Date/time]: Adds a task with a deadline.");
-        System.out.println(" - event [Task description] /from [Start time] /to [End time]: Adds an event task.");
-        System.out.println(" - list: Displays all tasks in the list.");
-        System.out.println(" - mark [Task number]: Marks a task as done.");
-        System.out.println(" - unmark [Task number]: Unmarks a task as not done.");
-        System.out.println(" - find [Keyword]: Finds a task by its keyword.");
-        System.out.println(" - delete [Task number]: Deletes a task from the list.");
-        System.out.println(" - bye: Exits the program.");
-        System.out.println("____________________________________________________________");
+    private String displayHelp() {
+        return "____________________________________________________________\n"
+                + " Available Commands:\n"
+                + " - todo [Task description]: Adds a task without a deadline.\n"
+                + " - deadline [Task description] /by [Date/time]: Adds a task with a deadline.\n"
+                + " - event [Task description] /from [Start time] /to [End time]: Adds an event task.\n"
+                + " - list: Displays all tasks in the list.\n"
+                + " - mark [Task number]: Marks a task as done.\n"
+                + " - unmark [Task number]: Unmarks a task as not done.\n"
+                + " - find [Keyword]: Finds a task by its keyword.\n"
+                + " - delete [Task number]: Deletes a task from the list.\n"
+                + " - bye: Exits the program.\n"
+                + "____________________________________________________________";
     }
 
-    private void listTasks() {
-        System.out.println("____________________________________________________________");
+    private String listTasks() {
+        StringBuilder result = new StringBuilder("____________________________________________________________\n");
         ArrayList<Task> tasks = taskManager.getTasks();
         if (tasks.isEmpty()) {
-            System.out.println("No tasks added.");
+            result.append("No tasks added.\n");
         } else {
-            System.out.println("Here are the tasks in your list:");
+            result.append("Here are the tasks in your list:\n");
             for (int i = 0; i < tasks.size(); i++) {
-                System.out.println((i + 1) + "." + tasks.get(i));
+                result.append((i + 1) + "." + tasks.get(i) + "\n");
             }
         }
-        System.out.println("____________________________________________________________");
+        result.append("____________________________________________________________");
+        return result.toString();
     }
 
-    private void handleAddToDo(String userInput) {
+    private String handleAddToDo(String userInput) {
         String taskDescription = userInput.substring(5).trim();
         taskManager.addToDoTask(taskDescription);
-        System.out.println("Got it. I've added this task: " + taskDescription);        taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
         taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
+        return "Got it. I've added this task: " + taskDescription;
     }
 
-    private void handleAddDeadline(String userInput) {
+    private String handleAddDeadline(String userInput) {
         try {
             if (!userInput.contains("/by")) {
                 throw new VeggieException("Correct format: deadline [Task description] /by [yyyy-MM-dd HH:mm]");
@@ -109,16 +112,14 @@ public class CommandHandler {
 
             // Attempt to add the deadline task
             taskManager.addDeadlineTask(taskDescription, by);
-            System.out.println("Got it. I've added this deadline task: " + taskDescription);
             taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
+            return "Got it. I've added this deadline task: " + taskDescription;
         } catch (VeggieException e) {
-            // Handle exception gracefully and print the message
-            System.out.println("Error adding deadline task: " + e.getMessage());
+            return "Error adding deadline task: " + e.getMessage();
         }
     }
 
-    // Update the method to accept TaskManager
-    private void handleAddEvent(String userInput, TaskManager taskManager) {
+    private String handleAddEvent(String userInput, TaskManager taskManager) {
         try {
             if (!userInput.contains("/from") || !userInput.contains("/to")) {
                 throw new VeggieException("Correct format: event [Task description] /from [Start time] /to [End time]");
@@ -129,47 +130,40 @@ public class CommandHandler {
             String from = parts.length > 1 ? parts[1].split("/to")[0].trim() : "";
             String to = parts.length > 1 ? parts[1].split("/to")[1].trim() : "";
 
-            // Now we use taskManager to add the event task
             taskManager.addEventTask(taskDescription, from, to);
-
-            // Confirm the task was added
-            System.out.println("____________________________________________________________");
-            System.out.println(" Got it. I've added this task:");
-            System.out.println("   " + taskDescription);
-            System.out.println(" Now you have " + taskManager.getTasks().size() + " tasks in the list.");
-            System.out.println("____________________________________________________________");
-
             taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
+
+            return "Got it. I've added this task:\n" + taskDescription
+                    + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
+
         } catch (VeggieException e) {
-            System.out.println("____________________________________________________________");
-            System.out.println(e.getMessage());
-            System.out.println("____________________________________________________________");
+            return "Error adding event task: " + e.getMessage();
         }
     }
 
-    private void handleMarkTask(String userInput) {
+    private String handleMarkTask(String userInput) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.markTaskAsDone(taskNumber);
-            System.out.println("Task marked as done.");
             taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after marking
+            return "Task marked as done.\n" + listTasks(); // Return the updated task list
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            return "Error: " + e.getMessage();
         }
     }
 
-    private void handleUnmarkTask(String userInput) {
+    private String handleUnmarkTask(String userInput) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.unmarkTask(taskNumber);
-            System.out.println("Task marked as not done.");
             taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after unmarking
+            return "Task marked as not done.\n" + listTasks(); // Return the updated task list
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            return "Error: " + e.getMessage();
         }
     }
 
-    private void handleFindTask(String userInput) {
+    private String handleFindTask(String userInput) {
         try {
             if (userInput.length() <= 5) {
                 throw new VeggieException("Please provide a keyword to search. Correct format: find [keyword]");
@@ -180,69 +174,30 @@ public class CommandHandler {
             // Delegate the task searching to TaskManager
             ArrayList<Task> matchingTasks = taskManager.findTasksByDescription(keyword);
 
-            // Print matching tasks
-            System.out.println("____________________________________________________________");
+            StringBuilder result = new StringBuilder("____________________________________________________________\n");
             if (matchingTasks.isEmpty()) {
-                System.out.println("No matching tasks found.");
+                result.append("No matching tasks found.\n");
             } else {
-                System.out.println("Here are the matching tasks in your list:");
+                result.append("Here are the matching tasks in your list:\n");
                 for (int i = 0; i < matchingTasks.size(); i++) {
-                    System.out.println((i + 1) + "." + matchingTasks.get(i).toString());
+                    result.append((i + 1) + "." + matchingTasks.get(i) + "\n");
                 }
             }
-            System.out.println("____________________________________________________________");
-
+            result.append("____________________________________________________________");
+            return result.toString();
         } catch (VeggieException e) {
-            System.out.println("____________________________________________________________");
-            System.out.println(e.getMessage());
-            System.out.println("____________________________________________________________");
+            return "Error: " + e.getMessage();
         }
     }
 
-    private void handleDeleteTask(String userInput) {
+    private String handleDeleteTask(String userInput) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.deleteTask(taskNumber);
-            System.out.println("Task deleted.");
             taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after deleting
+            return "Task deleted.\n" + listTasks(); // Return the updated task list
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            return "Error: " + e.getMessage();
         }
     }
-
-    /*
-    * EDIT THIS COMMENT:
-    * GUI-Specific processing
-    * */
-    public String processGuiCommand(String input) {
-        try {
-            if (input.equalsIgnoreCase("list")) {
-                return formatTasksForGui(taskManager.getTasks());
-            } else if (input.startsWith("todo")) {
-                return addTodoForGui(input);
-            }
-            // Add other command cases
-            return "Command processed: " + input;
-        } finally {
-            taskStorage.saveTasks(taskManager.getTasks());
-        }
-    }
-
-    private String formatTasksForGui(ArrayList<Task> tasks) {
-        if (tasks.isEmpty()) return "No tasks yet!";
-
-        StringBuilder sb = new StringBuilder("Your tasks:\n");
-        for (int i = 0; i < tasks.size(); i++) {
-            sb.append(i + 1).append(". ").append(tasks.get(i)).append("\n");
-        }
-        return sb.toString();
-    }
-
-    private String addTodoForGui(String input) {
-        String description = input.substring(5).trim();
-        taskManager.addToDoTask(description);
-        return "Added todo: " + description;
-    }
-
-
 }

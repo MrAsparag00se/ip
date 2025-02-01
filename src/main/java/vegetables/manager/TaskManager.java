@@ -91,18 +91,13 @@ public class TaskManager {
      * @param taskNumber The number of the task to be marked as done. The task number starts from 1.
      * @throws VeggieException If the task number is out of range or invalid.
      */
-    public void markTaskAsDone(int taskNumber) throws VeggieException {
+    public String markTaskAsDone(int taskNumber) throws VeggieException {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new VeggieException("Task number out of range.");
         }
         Task task = tasks.get(taskNumber - 1);
         task.markAsDone(); // Mark the task as done
-
-        // Output in the desired format
-        System.out.println("____________________________________________________________");
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println("  " + task); // Task's toString will show the updated status
-        System.out.println("____________________________________________________________");
+        return "Task marked as done: " + task; // Return message
     }
 
     /**
@@ -111,18 +106,13 @@ public class TaskManager {
      * @param taskNumber The number of the task to be unmarked. The task number starts from 1.
      * @throws VeggieException If the task number is out of range or invalid.
      */
-    public void unmarkTask(int taskNumber) throws VeggieException {
+    public String unmarkTask(int taskNumber) throws VeggieException {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new VeggieException("Task number out of range.");
         }
         Task task = tasks.get(taskNumber - 1);
         task.markAsNotDone(); // Unmark the task
-
-        // Output in the desired format
-        System.out.println("____________________________________________________________");
-        System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println("  " + task); // Task's toString will show the updated status
-        System.out.println("____________________________________________________________");
+        return "Task marked as not done: " + task; // Return message
     }
 
     /**

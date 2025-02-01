@@ -27,7 +27,7 @@ public class TaskStorage {
      *
      * @param tasks The list of tasks to be saved to the file.
      */
-    public void saveTasks(ArrayList<Task> tasks) {
+    public String saveTasks(ArrayList<Task> tasks) {
         try {
             // Ensure the directory exists
             File file = new File(FILE_PATH);
@@ -44,9 +44,9 @@ public class TaskStorage {
                     }
                 }
             }
-            System.out.println("Tasks have been successfully saved to the file.");
+            return "Tasks have been successfully saved to the file.";  // Return message to display in GUI
         } catch (IOException e) {
-            System.out.println("Error saving tasks to file: " + e.getMessage());
+            return "Error saving tasks to file: " + e.getMessage();  // Return error message to display in GUI
         }
     }
 

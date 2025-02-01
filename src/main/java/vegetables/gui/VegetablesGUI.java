@@ -17,6 +17,6 @@ public class VegetablesGUI {
     }
 
     public String getResponse(String input) {
-        return commandHandler.processGuiCommand(input);
+        return commandHandler.executeCommand(input);
     }
 }
