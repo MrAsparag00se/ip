@@ -1,42 +1,38 @@
 plugins {
     id 'java'
     id 'application'
-    id 'checkstyle'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
-    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.0'
+javafx {
+    version = "17.0.14"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.graphics' ]
 }
 
-test {
-    useJUnitPlatform()
-
-    testLogging {
-        events "passed", "skipped", "failed"
-
-        showExceptions true
-        exceptionFormat "full"
-        showCauses true
-        showStackTraces true
-        showStandardStreams = false
-    }
+dependencies {
+    implementation "org.openjfx:javafx-base:17.0.14:win"
+    implementation "org.openjfx:javafx-controls:17.0.14:win"
+    implementation "org.openjfx:javafx-fxml:17.0.14:win"
+    implementation "org.openjfx:javafx-graphics:17.0.14:win"
 }
 
 application {
-    mainClass.set("vegetables.Vegetables")
+    mainClass = 'vegetables.gui.Launcher'
 }
 
 shadowJar {
-    archiveBaseName = "veggie"
+    archiveBaseName = 'veggie'
     archiveClassifier = null
-}
-
-run{
-    standardInput = System.in
+    mergeServiceFiles()
+    
+    exclude 'module-info.class'
+    manifest {
+        attributes 'Main-Class': 'vegetables.gui.Launcher'
+    }
+    
 }

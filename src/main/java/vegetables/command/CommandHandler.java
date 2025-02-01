@@ -209,4 +209,40 @@ public class CommandHandler {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
+    /*
+    * EDIT THIS COMMENT:
+    * GUI-Specific processing
+    * */
+    public String processGuiCommand(String input) {
+        try {
+            if (input.equalsIgnoreCase("list")) {
+                return formatTasksForGui(taskManager.getTasks());
+            } else if (input.startsWith("todo")) {
+                return addTodoForGui(input);
+            }
+            // Add other command cases
+            return "Command processed: " + input;
+        } finally {
+            taskStorage.saveTasks(taskManager.getTasks());
+        }
+    }
+
+    private String formatTasksForGui(ArrayList<Task> tasks) {
+        if (tasks.isEmpty()) return "No tasks yet!";
+
+        StringBuilder sb = new StringBuilder("Your tasks:\n");
+        for (int i = 0; i < tasks.size(); i++) {
+            sb.append(i + 1).append(". ").append(tasks.get(i)).append("\n");
+        }
+        return sb.toString();
+    }
+
+    private String addTodoForGui(String input) {
+        String description = input.substring(5).trim();
+        taskManager.addToDoTask(description);
+        return "Added todo: " + description;
+    }
+
+
 }
