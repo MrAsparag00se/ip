@@ -112,16 +112,20 @@ public class CommandHandler {
         }
         return result.toString();
     }
-
     private String handleAddToDo(String userInput) {
-        String taskDescription = userInput.substring(5).trim();
+        String taskDescription = "";
+
+        // Extract description only if input is longer than "todo "
+        if (userInput.length() > 4) {
+            taskDescription = userInput.substring(5).trim();
+        }
 
         if (taskManager.taskExists(taskDescription)) {
             return "Duplicate task detected! Task already exists.";
         }
 
         taskManager.addToDoTask(taskDescription);
-        taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
+        taskStorage.saveTasks(taskManager.getTasks());
         return "Got it. I've added this task: " + taskDescription;
     }
 
