@@ -136,14 +136,23 @@ public class CommandHandler {
             }
 
             String[] parts = userInput.split("/by");
-            String taskDescription = parts[0].substring(9).trim();
+            // Handle missing "/by" value
+            if (parts.length < 2) {
+                throw new VeggieException("Missing deadline date. Use: /by [yyyy-MM-dd HH:mm]");
+            }
+
+            String taskDescription = parts[0].substring(9).trim(); // "deadline " is 9 characters
             String by = parts[1].trim();
 
-            // Convert deadline string to LocalDateTime
+            // Validate description is not empty
+            if (taskDescription.isEmpty()) {
+                throw new VeggieException("Task description cannot be empty!");
+            }
+
+            // Validate date format
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime deadlineDateTime = LocalDateTime.parse(by, formatter);
 
-            // Check if deadline is in the past
             if (deadlineDateTime.isBefore(LocalDateTime.now())) {
                 return "Error: Deadline cannot be in the past!";
             }
@@ -157,7 +166,7 @@ public class CommandHandler {
             return "Got it. I've added this deadline task: " + taskDescription;
         } catch (DateTimeParseException e) {
             return "Error: Invalid time or time format. Use: yyyy-MM-dd HH:mm";
-        } catch (VeggieException e) {
+        } catch (VeggieException | IndexOutOfBoundsException e) {
             return "Error adding deadline task: " + e.getMessage();
         }
     }
@@ -170,6 +179,11 @@ public class CommandHandler {
 
             String[] parts = userInput.split("/from");
             String taskDescription = parts[0].substring(6).trim();
+
+            if (taskDescription.isEmpty()) {
+                throw new VeggieException("Task description cannot be empty!");
+            }
+
             String from = parts.length > 1 ? parts[1].split("/to")[0].trim() : "";
             String to = parts.length > 1 ? parts[1].split("/to")[1].trim() : "";
 
