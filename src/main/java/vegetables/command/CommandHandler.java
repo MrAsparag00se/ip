@@ -174,6 +174,9 @@ public class CommandHandler {
             LocalDateTime fromDateTime = LocalDateTime.parse(from, formatter);
             LocalDateTime toDateTime = LocalDateTime.parse(to, formatter);
 
+            // Check for event clash using the abstracted method
+            StringBuilder warningMessage = taskManager.checkEventClash(fromDateTime, toDateTime);
+
             // Check if start or end time is in the past
             if (fromDateTime.isBefore(LocalDateTime.now()) || toDateTime.isBefore(LocalDateTime.now())) {
                 return "Error: Event times cannot be in the past!";
@@ -191,8 +194,14 @@ public class CommandHandler {
             taskManager.addEventTask(taskDescription, from, to);
             taskStorage.saveTasks(taskManager.getTasks());
 
-            return "Got it. I've added this task:\n" + taskDescription
-                    + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
+            if (warningMessage != null) {
+                return "Event added with a warning:\n" + warningMessage.toString() +
+                        "\nNew event added: " + taskDescription +
+                        "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
+            } else {
+                return "Got it. I've added this event task:\n" + taskDescription +
+                        "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
+            }
 
         } catch (DateTimeParseException e) {
             return "Error: Invalid time or time format. Use: yyyy-MM-dd HH:mm";

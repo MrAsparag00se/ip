@@ -6,6 +6,8 @@ import vegetables.task.Deadline;
 import vegetables.task.Event;
 import vegetables.exception.VeggieException;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * TaskManager is responsible for managing a list of tasks. It supports adding various
@@ -97,6 +99,34 @@ public class TaskManager {
 
         Task newTask = new Event(description, from, to);
         tasks.add(newTask);
+    }
+
+    /**
+     * Checks if the new event clashes with any existing events.
+     *
+     * @param newFrom The start time of the new event.
+     * @param newTo The end time of the new event.
+     * @return A StringBuilder containing any warnings about overlapping events.
+     */
+    public StringBuilder checkEventClash(LocalDateTime newFrom, LocalDateTime newTo) {
+        StringBuilder warningMessage = new StringBuilder();
+
+        for (Task task : tasks) {
+            if (task instanceof Event) {
+                Event existingEvent = (Event) task;
+                LocalDateTime existingFrom = LocalDateTime.parse(existingEvent.getFrom(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                LocalDateTime existingTo = LocalDateTime.parse(existingEvent.getTo(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+                // Check if there's an overlap
+                if ((newFrom.isBefore(existingTo) && newTo.isAfter(existingFrom))) {
+                    warningMessage.append("Warning: The event \"")
+                            .append(existingEvent.getDescription())
+                            .append("\" overlaps with the new event.\n");
+                }
+            }
+        }
+
+        return warningMessage.length() > 0 ? warningMessage : null;
     }
 
     /**
