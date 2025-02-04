@@ -5,6 +5,10 @@ import vegetables.manager.TaskManager;
 import vegetables.storage.TaskStorage;
 import vegetables.exception.VeggieException;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 
 /**
  * CommandHandler is responsible for processing and executing user commands
@@ -102,6 +106,7 @@ public class CommandHandler {
         } else {
             result.append("Here are the tasks in your list:\n");
             for (int i = 0; i < tasks.size(); i++) {
+                // Add 1 for 1-indexing
                 result.append((i + 1) + "." + tasks.get(i) + "\n");
             }
         }
@@ -130,6 +135,15 @@ public class CommandHandler {
             String taskDescription = parts[0].substring(9).trim();
             String by = parts[1].trim();
 
+            // Convert deadline string to LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime deadlineDateTime = LocalDateTime.parse(by, formatter);
+
+            // Check if deadline is in the past
+            if (deadlineDateTime.isBefore(LocalDateTime.now())) {
+                return "Error: Deadline cannot be in the past!";
+            }
+
             if (taskManager.taskExists(taskDescription)) {
                 return "Duplicate task detected! Task already exists.";
             }
@@ -137,6 +151,8 @@ public class CommandHandler {
             taskManager.addDeadlineTask(taskDescription, by);
             taskStorage.saveTasks(taskManager.getTasks());
             return "Got it. I've added this deadline task: " + taskDescription;
+        } catch (DateTimeParseException e) {
+            return "Error: Invalid time or time format. Use: yyyy-MM-dd HH:mm";
         } catch (VeggieException e) {
             return "Error adding deadline task: " + e.getMessage();
         }
@@ -153,6 +169,21 @@ public class CommandHandler {
             String from = parts.length > 1 ? parts[1].split("/to")[0].trim() : "";
             String to = parts.length > 1 ? parts[1].split("/to")[1].trim() : "";
 
+            // Convert start and end time strings to LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime fromDateTime = LocalDateTime.parse(from, formatter);
+            LocalDateTime toDateTime = LocalDateTime.parse(to, formatter);
+
+            // Check if start or end time is in the past
+            if (fromDateTime.isBefore(LocalDateTime.now()) || toDateTime.isBefore(LocalDateTime.now())) {
+                return "Error: Event times cannot be in the past!";
+            }
+
+            // Check if start time is after end time
+            if (fromDateTime.isAfter(toDateTime)) {
+                return "Error: Start time cannot be after end time!";
+            }
+
             if (taskManager.taskExists(taskDescription)) {
                 return "Duplicate task detected! Task already exists.";
             }
@@ -163,6 +194,8 @@ public class CommandHandler {
             return "Got it. I've added this task:\n" + taskDescription
                     + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
 
+        } catch (DateTimeParseException e) {
+            return "Error: Invalid time or time format. Use: yyyy-MM-dd HH:mm";
         } catch (VeggieException e) {
             return "Error adding event task: " + e.getMessage();
         }
