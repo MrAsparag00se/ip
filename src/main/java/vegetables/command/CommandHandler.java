@@ -28,11 +28,29 @@ public class CommandHandler {
     }
 
     /**
-     * Executes a command based on the user input. The method handles various
-     * commands such as "help", "list", "todo", "deadline", "event", "mark", "unmark",
-     * "find", "delete", and "bye".
+     * Executes a command based on the user input.
+     * <p>
+     * This method interprets the user's input and executes the corresponding command.
+     * It supports the following commands:
+     * </p>
+     * <ul>
+     *     <li><b>"help"</b> - Displays a list of available commands.</li>
+     *     <li><b>"list"</b> - Lists all tasks.</li>
+     *     <li><b>"todo [description]"</b> - Adds a new to-do task.</li>
+     *     <li><b>"deadline [description] /by [date]"</b> - Adds a new deadline task.</li>
+     *     <li><b>"event [description] /at [date]"</b> - Adds a new event task.</li>
+     *     <li><b>"mark [task number]"</b> - Marks a task as completed.</li>
+     *     <li><b>"unmark [task number]"</b> - Marks a task as incomplete.</li>
+     *     <li><b>"find [keyword]"</b> - Searches for tasks containing the given keyword.</li>
+     *     <li><b>"delete [task number]"</b> - Removes a task from the list.</li>
+     *     <li><b>"bye"</b> - Saves tasks and exits the application.</li>
+     * </ul>
+     * <p>
+     * If the input does not match any known command, an error message is returned.
+     * </p>
      *
      * @param userInput The command input provided by the user.
+     * @return A response message indicating the result of executing the command.
      */
     public String executeCommand(String userInput) {
         String result;
@@ -64,8 +82,7 @@ public class CommandHandler {
     }
 
     private String displayHelp() {
-        return "____________________________________________________________\n"
-                + " Available Commands:\n"
+        return " Available Commands:\n"
                 + " - todo [Task description]: Adds a task without a deadline.\n"
                 + " - deadline [Task description] /by [Date/time]: Adds a task with a deadline.\n"
                 + " - event [Task description] /from [Start time] /to [End time]: Adds an event task.\n"
@@ -74,12 +91,11 @@ public class CommandHandler {
                 + " - unmark [Task number]: Unmarks a task as not done.\n"
                 + " - find [Keyword]: Finds a task by its keyword.\n"
                 + " - delete [Task number]: Deletes a task from the list.\n"
-                + " - bye: Exits the program.\n"
-                + "____________________________________________________________";
+                + " - bye: Exits the program.\n";
     }
 
     private String listTasks() {
-        StringBuilder result = new StringBuilder("____________________________________________________________\n");
+        StringBuilder result = new StringBuilder();
         ArrayList<Task> tasks = taskManager.getTasks();
         if (tasks.isEmpty()) {
             result.append("No tasks added.\n");
@@ -89,7 +105,6 @@ public class CommandHandler {
                 result.append((i + 1) + "." + tasks.get(i) + "\n");
             }
         }
-        result.append("____________________________________________________________");
         return result.toString();
     }
 
@@ -172,9 +187,9 @@ public class CommandHandler {
             String keyword = userInput.substring(5).trim(); // Extract the keyword
 
             // Delegate the task searching to TaskManager
-            ArrayList<Task> matchingTasks = taskManager.findTasksByDescription(keyword);
+            ArrayList<Task> matchingTasks = taskManager.findTasksBySubstring(keyword);
 
-            StringBuilder result = new StringBuilder("____________________________________________________________\n");
+            StringBuilder result = new StringBuilder();
             if (matchingTasks.isEmpty()) {
                 result.append("No matching tasks found.\n");
             } else {
@@ -183,7 +198,6 @@ public class CommandHandler {
                     result.append((i + 1) + "." + matchingTasks.get(i) + "\n");
                 }
             }
-            result.append("____________________________________________________________");
             return result.toString();
         } catch (VeggieException e) {
             return "Error: " + e.getMessage();

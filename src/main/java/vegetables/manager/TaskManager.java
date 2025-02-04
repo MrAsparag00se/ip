@@ -87,8 +87,13 @@ public class TaskManager {
 
     /**
      * Marks a task as done by updating its status.
+     * <p>
+     * The task number is 1-based, meaning the first task in the list has taskNumber = 1.
+     * If the provided task number is out of range, an exception is thrown.
+     * </p>
      *
-     * @param taskNumber The number of the task to be marked as done. The task number starts from 1.
+     * @param taskNumber The number of the task to be marked as done (1-based index).
+     * @return A confirmation message indicating the task has been marked as done.
      * @throws VeggieException If the task number is out of range or invalid.
      */
     public String markTaskAsDone(int taskNumber) throws VeggieException {
@@ -102,8 +107,13 @@ public class TaskManager {
 
     /**
      * Unmarks a task by updating its status to "not done".
+     * <p>
+     * The task number is 1-based, meaning the first task in the list has taskNumber = 1.
+     * If the provided task number is out of range, an exception is thrown.
+     * </p>
      *
-     * @param taskNumber The number of the task to be unmarked. The task number starts from 1.
+     * @param taskNumber The number of the task to be unmarked (1-based index).
+     * @return A confirmation message indicating the task has been marked as not done.
      * @throws VeggieException If the task number is out of range or invalid.
      */
     public String unmarkTask(int taskNumber) throws VeggieException {
@@ -129,12 +139,12 @@ public class TaskManager {
     }
 
     /**
-     * Finds tasks in the list that match a given keyword in their description.
+     * Finds tasks in the list that match a given substring in their description.
      *
      * @param keyword The keyword to search for in task descriptions.
-     * @return A list of tasks whose descriptions contain the keyword.
+     * @return A list of tasks whose descriptions contain the substring.
      */
-    public ArrayList<Task> findTasksByDescription(String keyword) {
+    public ArrayList<Task> findTasksBySubstring(String keyword) {
         ArrayList<Task> matchingTasks = new ArrayList<>();  // List for storing matching tasks
         for (Task task : tasks) {
             if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {

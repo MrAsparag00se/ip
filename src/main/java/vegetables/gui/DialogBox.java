@@ -26,8 +26,8 @@ public class DialogBox extends HBox {
 
     private DialogBox(String text, Image img) {
         try {
-// In DialogBox constructor
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/DialogBox.fxml"));            fxmlLoader.setController(this);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/DialogBox.fxml"));
+            fxmlLoader.setController(this);
             fxmlLoader.setRoot(this);
             fxmlLoader.load();
         } catch (IOException e) {
@@ -48,10 +48,27 @@ public class DialogBox extends HBox {
         setAlignment(Pos.TOP_LEFT);
     }
 
+    /**
+     * Creates a dialog box for the user, with the given text and image.
+     *
+     * @param text The text message from the user.
+     * @param img  The image representing the user.
+     * @return A DialogBox instance displaying the user's message.
+     */
     public static DialogBox getUserDialog(String text, Image img) {
         return new DialogBox(text, img);
     }
 
+    /**
+     * Creates a dialog box for the system (Veggie), with the given text and image.
+     * <p>
+     * The dialog box is flipped so that the system's messages appear distinct from the user's.
+     * </p>
+     *
+     * @param text The text message from the system (Veggie).
+     * @param img  The image representing the system.
+     * @return A DialogBox instance displaying the system's message.
+     */
     public static DialogBox getVeggieDialog(String text, Image img) {
         var db = new DialogBox(text, img);
         db.flip();

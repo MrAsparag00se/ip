@@ -19,13 +19,17 @@ public class TaskStorage {
     private static final String FILE_PATH = "./SHOPPING/list.txt";
 
     /**
-     * Saves the tasks to a file. If the file or directories don't exist, it will create them.
-     * If the file already exists, it will overwrite the contents with the current tasks.
+     * Saves the given list of tasks to a file. If the required directories do not exist,
+     * they will be created automatically. If the file already exists, it will be overwritten
+     * with the current list of tasks.
      * <p>
      * Each task is written to the file using its {@link Task#toFileString()} method.
+     * If a null task is encountered, a warning message is printed to the console.
      * </p>
      *
-     * @param tasks The list of tasks to be saved to the file.
+     * @param tasks The list of tasks to be saved to the file. Each task must implement
+     *             the {@link Task#toFileString()} method to ensure correct formatting.
+     * @return A message indicating whether the tasks were successfully saved or if an error occurred.
      */
     public String saveTasks(ArrayList<Task> tasks) {
         try {
