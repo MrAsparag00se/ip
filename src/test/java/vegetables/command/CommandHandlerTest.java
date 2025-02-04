@@ -7,6 +7,8 @@ import vegetables.exception.VeggieException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.mock;
@@ -453,5 +455,238 @@ public class CommandHandlerTest {
         } catch (VeggieException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void handleFindTask_ValidSubstring_ReturnsMatchingTasks() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // Mock tasks containing "Thi"
+        ArrayList<Task> mockTasks = new ArrayList<>();
+        Task task1 = mock(Task.class);
+        when(task1.toString()).thenReturn("[T][ ] This is cold");
+        Task task2 = mock(Task.class);
+        when(task2.toString()).thenReturn("[T][ ] This is hot");
+        Task task3 = mock(Task.class);
+        when(task3.toString()).thenReturn("[E][ ] Thicken (from: 2024-01-01 10:00 to: 2024-01-01 12:00)");
+        mockTasks.add(task1);
+        mockTasks.add(task2);
+        mockTasks.add(task3);
+
+        // Stub the search for "Thi"
+        when(mockTaskManager.findTasksBySubstring("Thi")).thenReturn(mockTasks);
+
+        String result = handler.executeCommand("find Thi");
+
+        String expectedOutput =
+                "Here are the matching tasks in your list:\n" +
+                        "1.[T][ ] This is cold\n" +
+                        "2.[T][ ] This is hot\n" +
+                        "3.[E][ ] Thicken (from: 2024-01-01 10:00 to: 2024-01-01 12:00)\n";
+
+        assertEquals(expectedOutput, result);
+    }
+
+    @Test
+    void handleFindTask_NoMatches_ReturnsNoTasksMessage() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // Stub empty search results
+        when(mockTaskManager.findTasksBySubstring("XYZ")).thenReturn(new ArrayList<>());
+
+        String result = handler.executeCommand("find XYZ");
+
+        assertEquals("No matching tasks found.\n", result);
+    }
+
+    @Test
+    void handleFindTask_EmptyKeyword_ReturnsErrorMessage() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        String result = handler.executeCommand("find");
+
+        assertEquals("Error: Please provide a keyword to search. Correct format: find [keyword]", result);
+    }
+
+    @Test
+    void handleDeleteTask_ValidTaskNumber_DeletesTaskAndReturnsUpdatedList() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // Use a mutable list to track tasks dynamically
+        List<Task> tasks = new ArrayList<>();
+        Task task1 = mock(Task.class);
+        Task task2 = mock(Task.class);
+        tasks.add(task1); // Original index 0 (task 1)
+        tasks.add(task2); // Original index 1 (task 2)
+
+        // Stub getTasks() to return the current state of the list
+        when(mockTaskManager.getTasks()).thenAnswer(invocation -> new ArrayList<>(tasks));
+
+        // When deleteTask is called, remove the task from the list
+        try {
+            doAnswer(invocation -> {
+                int taskNumber = invocation.getArgument(0); // 1-based index
+                tasks.remove(taskNumber - 1); // Convert to 0-based index
+                return null;
+            }).when(mockTaskManager).deleteTask(anyInt());
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Stub toString() for the remaining task
+        when(task2.toString()).thenReturn("[T][ ] Remaining Task");
+
+        // Execute command: delete task 1 (original task1)
+        String result = handler.executeCommand("delete 1");
+
+        // Verify the response message shows the updated list with 1 task (task2)
+        assertEquals(
+                "Task deleted.\nHere are the tasks in your list:\n1.[T][ ] Remaining Task\n",
+                result
+        );
+
+        // Verify the saved tasks list has size 1 (task2)
+        verify(mockTaskStorage).saveTasks(argThat(savedTasks ->
+                savedTasks.size() == 1 && savedTasks.get(0) == task2
+        ));
+    }
+
+    @Test
+    void handleDeleteTask_OutOfBoundsTaskNumber_ReturnsError() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // TaskManager throws exception for invalid index
+        try {
+            doThrow(new IndexOutOfBoundsException("Invalid task index: 5"))
+                    .when(mockTaskManager).deleteTask(5);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+
+        String result = handler.executeCommand("delete 5");
+
+        assertEquals("Error: Invalid task index: 5", result);
+        try {
+            verify(mockTaskManager).deleteTask(5);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+        verify(mockTaskStorage, never()).saveTasks(any(ArrayList.class));
+    }
+
+    @Test
+    void handleMarkTask_ValidTaskNumber_MarksTaskAndReturnsUpdatedList() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // Mock tasks
+        ArrayList<Task> tasks = new ArrayList<>();
+        Task task = mock(Task.class);
+        tasks.add(task);
+        when(task.toString()).thenReturn("[T][X] Completed task"); // Marked as done
+
+        when(mockTaskManager.getTasks()).thenReturn(tasks);
+
+        String result = handler.executeCommand("mark 1");
+
+        assertEquals(
+                "Task marked as done.\nHere are the tasks in your list:\n1.[T][X] Completed task\n",
+                result
+        );
+        try {
+            verify(mockTaskManager).markTaskAsDone(1);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+        verify(mockTaskStorage).saveTasks(tasks);
+    }
+
+
+    @Test
+    void handleMarkTask_OutOfBoundsTaskNumber_ReturnsError() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // Simulate an out-of-bounds exception
+        try {
+            doThrow(new IndexOutOfBoundsException("Task index out of bounds"))
+                    .when(mockTaskManager).markTaskAsDone(1);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+
+        String result = handler.executeCommand("mark 1");
+
+        assertEquals("Error: Task index out of bounds", result);
+        try {
+            verify(mockTaskManager).markTaskAsDone(1);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+        verify(mockTaskStorage, never()).saveTasks(any(ArrayList.class));
+    }
+
+    @Test
+    void handleUnmarkTask_ValidTaskNumber_UnmarksTaskAndReturnsUpdatedList() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // Mock task list with one task (unmarked after unmarking)
+        ArrayList<Task> tasks = new ArrayList<>();
+        Task task = mock(Task.class);
+        tasks.add(task);
+        when(task.toString()).thenReturn("[T][ ] Read book"); // Unmarked state
+        when(mockTaskManager.getTasks()).thenReturn(tasks);
+
+        String result = handler.executeCommand("unmark 1");
+
+        assertEquals(
+                "Task marked as not done.\nHere are the tasks in your list:\n1.[T][ ] Read book\n",
+                result
+        );
+        try {
+            verify(mockTaskManager).unmarkTask(1);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+        verify(mockTaskStorage).saveTasks(tasks);
+    }
+
+    @Test
+    void handleUnmarkTask_OutOfBoundsTaskNumber_ReturnsError() {
+        TaskManager mockTaskManager = mock(TaskManager.class);
+        TaskStorage mockTaskStorage = mock(TaskStorage.class);
+        CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
+
+        // Simulate out-of-bounds exception
+        try {
+            doThrow(new IndexOutOfBoundsException("Task index out of bounds"))
+                    .when(mockTaskManager).unmarkTask(5);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+
+        String result = handler.executeCommand("unmark 5");
+
+        assertEquals("Error: Task index out of bounds", result);
+        try {
+            verify(mockTaskManager).unmarkTask(5);
+        } catch (VeggieException e) {
+            throw new RuntimeException(e);
+        }
+        verify(mockTaskStorage, never()).saveTasks(any(ArrayList.class));
     }
 }
