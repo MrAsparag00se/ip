@@ -110,6 +110,11 @@ public class CommandHandler {
 
     private String handleAddToDo(String userInput) {
         String taskDescription = userInput.substring(5).trim();
+
+        if (taskManager.taskExists(taskDescription)) {
+            return "Duplicate task detected! Task already exists.";
+        }
+
         taskManager.addToDoTask(taskDescription);
         taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
         return "Got it. I've added this task: " + taskDescription;
@@ -122,12 +127,15 @@ public class CommandHandler {
             }
 
             String[] parts = userInput.split("/by");
-            String taskDescription = parts[0].substring(9).trim();  // Ensure this is the right way to extract description
+            String taskDescription = parts[0].substring(9).trim();
             String by = parts[1].trim();
 
-            // Attempt to add the deadline task
+            if (taskManager.taskExists(taskDescription)) {
+                return "Duplicate task detected! Task already exists.";
+            }
+
             taskManager.addDeadlineTask(taskDescription, by);
-            taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
+            taskStorage.saveTasks(taskManager.getTasks());
             return "Got it. I've added this deadline task: " + taskDescription;
         } catch (VeggieException e) {
             return "Error adding deadline task: " + e.getMessage();
@@ -145,8 +153,12 @@ public class CommandHandler {
             String from = parts.length > 1 ? parts[1].split("/to")[0].trim() : "";
             String to = parts.length > 1 ? parts[1].split("/to")[1].trim() : "";
 
+            if (taskManager.taskExists(taskDescription)) {
+                return "Duplicate task detected! Task already exists.";
+            }
+
             taskManager.addEventTask(taskDescription, from, to);
-            taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
+            taskStorage.saveTasks(taskManager.getTasks());
 
             return "Got it. I've added this task:\n" + taskDescription
                     + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
@@ -160,7 +172,7 @@ public class CommandHandler {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.markTaskAsDone(taskNumber);
-            taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after marking
+            taskStorage.saveTasks(taskManager.getTasks());
             return "Task marked as done.\n" + listTasks(); // Return the updated task list
         } catch (Exception e) {
             return "Error: " + e.getMessage();
@@ -171,7 +183,7 @@ public class CommandHandler {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.unmarkTask(taskNumber);
-            taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after unmarking
+            taskStorage.saveTasks(taskManager.getTasks());
             return "Task marked as not done.\n" + listTasks(); // Return the updated task list
         } catch (Exception e) {
             return "Error: " + e.getMessage();
@@ -184,7 +196,7 @@ public class CommandHandler {
                 throw new VeggieException("Please provide a keyword to search. Correct format: find [keyword]");
             }
 
-            String keyword = userInput.substring(5).trim(); // Extract the keyword
+            String keyword = userInput.substring(5).trim();
 
             // Delegate the task searching to TaskManager
             ArrayList<Task> matchingTasks = taskManager.findTasksBySubstring(keyword);
@@ -208,7 +220,7 @@ public class CommandHandler {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.deleteTask(taskNumber);
-            taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after deleting
+            taskStorage.saveTasks(taskManager.getTasks());
             return "Task deleted.\n" + listTasks(); // Return the updated task list
         } catch (Exception e) {
             return "Error: " + e.getMessage();

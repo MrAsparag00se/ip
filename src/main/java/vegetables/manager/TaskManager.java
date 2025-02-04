@@ -26,6 +26,22 @@ public class TaskManager {
     }
 
     /**
+     * Checks if a task with the given description already exists in the task list.
+     *
+     * @param description The description of the task to check for duplicates.
+     * @return true if a task with the same description exists, false otherwise.
+     */
+    public boolean taskExists(String description) {
+        for (Task task : tasks) {
+            if (task.getDescription().equalsIgnoreCase(description)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * Adds a To-Do task to the task list with the provided description.
      *
      * @param description The description of the To-Do task to be added.
@@ -48,7 +64,6 @@ public class TaskManager {
             throw new VeggieException("Task description cannot be empty.");
         }
 
-        // Validate the deadline format (e.g., a simple check for a date pattern, you could refine this)
         if (!deadline.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}")) {
             throw new VeggieException("Invalid deadline format. Use: yyyy-MM-dd HH:mm");
         }
@@ -76,7 +91,6 @@ public class TaskManager {
             throw new VeggieException("Both start time (/from) and end time (/to) must be provided.");
         }
 
-        // Optionally, validate date formats for 'from' and 'to'
         if (!from.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}") || !to.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}")) {
             throw new VeggieException("Invalid time format. Correct format: yyyy-MM-dd HH:mm");
         }
