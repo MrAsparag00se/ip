@@ -32,26 +32,37 @@ public class TaskStorage {
      * @return A message indicating whether the tasks were successfully saved or if an error occurred.
      */
     public String saveTasks(ArrayList<Task> tasks) {
-        try {
-            // Ensure the directory exists
-            File file = new File(FILE_PATH);
-            file.getParentFile().mkdirs();  // Create parent directories if they don't exist
+        File file = new File(FILE_PATH);
 
-            // Now write the tasks to the file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                for (Task task : tasks) {
-                    if (task != null) {
-                        writer.write(task.toFileString());
-                        writer.newLine();
-                    } else {
-                        System.out.println("Warning: Encountered a null task while saving.");
-                    }
-                }
-            }
-            return "Tasks have been successfully saved to the file.";  // Return message to display in GUI
+        // Ensure the directory exists
+        createParentDirectories(file);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writeTasksToFile(writer, tasks);
         } catch (IOException e) {
-            return "Error saving tasks to file: " + e.getMessage();  // Return error message to display in GUI
+            return handleSaveError(e);
         }
+
+        return "Tasks have been successfully saved to the file.";
+    }
+
+    private void createParentDirectories(File file) {
+        file.getParentFile().mkdirs();  // Create parent directories if they don't exist
+    }
+
+    private void writeTasksToFile(BufferedWriter writer, ArrayList<Task> tasks) throws IOException {
+        for (Task task : tasks) {
+            if (task != null) {
+                writer.write(task.toFileString());
+                writer.newLine();
+            } else {
+                System.out.println("Warning: Encountered a null task while saving.");
+            }
+        }
+    }
+
+    private String handleSaveError(IOException e) {
+        return "Error saving tasks to file: " + e.getMessage();
     }
 
     /**
@@ -65,26 +76,35 @@ public class TaskStorage {
      */
     public ArrayList<Task> loadTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
-        try {
-            File file = new File(FILE_PATH);
-            if (!file.exists()) {
-                return tasks;  // Return empty list if the file doesn't exist
-            }
 
-            try (Scanner fileScanner = new Scanner(file)) {
-                while (fileScanner.hasNextLine()) {
-                    String line = fileScanner.nextLine();
-                    try {
-                        Task task = Task.fromFileString(line);  // This can throw VeggieException
-                        tasks.add(task);
-                    } catch (VeggieException e) {
-                        System.out.println("Error parsing task from file: " + e.getMessage());
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Error loading tasks: " + e.getMessage());
+        // Check if the file exists and load the tasks
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            return tasks;  // Return empty list if the file doesn't exist
         }
+
+        try (Scanner fileScanner = new Scanner(file)) {
+            loadTasksFromFile(fileScanner, tasks);
+        } catch (FileNotFoundException e) {
+            handleFileLoadingError(e);
+        }
+
         return tasks;
+    }
+
+    private void loadTasksFromFile(Scanner fileScanner, ArrayList<Task> tasks) {
+        while (fileScanner.hasNextLine()) {
+            String line = fileScanner.nextLine();
+            try {
+                Task task = Task.fromFileString(line);  // This can throw VeggieException
+                tasks.add(task);
+            } catch (VeggieException e) {
+                System.out.println("Error parsing task from file: " + e.getMessage());
+            }
+        }
+    }
+
+    private void handleFileLoadingError(FileNotFoundException e) {
+        System.out.println("Error loading tasks: " + e.getMessage());
     }
 }
