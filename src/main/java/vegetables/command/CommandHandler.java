@@ -1,13 +1,14 @@
 package vegetables.command;
 
-import vegetables.task.Task;
-import vegetables.manager.TaskManager;
-import vegetables.storage.TaskStorage;
-import vegetables.exception.VeggieException;
-import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+
+import vegetables.exception.VeggieException;
+import vegetables.manager.TaskManager;
+import vegetables.storage.TaskStorage;
+import vegetables.task.Task;
 
 
 /**
@@ -120,16 +121,20 @@ public class CommandHandler {
         }
         return result.toString();
     }
-
     private String handleAddToDo(String userInput) {
-        String taskDescription = userInput.substring(5).trim();
+        String taskDescription = "";
+
+        // Extract description only if input is longer than "todo "
+        if (userInput.length() > 4) {
+            taskDescription = userInput.substring(5).trim();
+        }
 
         if (taskManager.taskExists(taskDescription)) {
             return "Duplicate task detected! Task already exists.";
         }
 
         taskManager.addToDoTask(taskDescription);
-        taskStorage.saveTasks(taskManager.getTasks()); // Save tasks after adding
+        taskStorage.saveTasks(taskManager.getTasks());
         return "Got it. I've added this task: " + taskDescription;
     }
 
@@ -143,14 +148,23 @@ public class CommandHandler {
             }
 
             String[] parts = userInput.split("/by");
-            String taskDescription = parts[0].substring(9).trim();
+            // Handle missing "/by" value
+            if (parts.length < 2) {
+                throw new VeggieException("Missing deadline date. Use: /by [yyyy-MM-dd HH:mm]");
+            }
+
+            String taskDescription = parts[0].substring(9).trim(); // "deadline " is 9 characters
             String by = parts[1].trim();
 
-            // Convert deadline string to LocalDateTime
+            // Validate description is not empty
+            if (taskDescription.isEmpty()) {
+                throw new VeggieException("Task description cannot be empty!");
+            }
+
+            // Validate date format
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime deadlineDateTime = LocalDateTime.parse(by, formatter);
 
-            // Check if deadline is in the past
             if (deadlineDateTime.isBefore(LocalDateTime.now())) {
                 return "Error: Deadline cannot be in the past!";
             }
@@ -166,7 +180,7 @@ public class CommandHandler {
             return "Got it. I've added this deadline task: " + taskDescription;
         } catch (DateTimeParseException e) {
             return "Error: Invalid time or time format. Use: yyyy-MM-dd HH:mm";
-        } catch (VeggieException e) {
+        } catch (VeggieException | IndexOutOfBoundsException e) {
             return "Error adding deadline task: " + e.getMessage();
         }
     }
@@ -182,6 +196,11 @@ public class CommandHandler {
 
             String[] parts = userInput.split("/from");
             String taskDescription = parts[0].substring(6).trim();
+
+            if (taskDescription.isEmpty()) {
+                throw new VeggieException("Task description cannot be empty!");
+            }
+
             String from = parts.length > 1 ? parts[1].split("/to")[0].trim() : "";
             String to = parts.length > 1 ? parts[1].split("/to")[1].trim() : "";
 
@@ -213,12 +232,12 @@ public class CommandHandler {
             taskStorage.saveTasks(taskManager.getTasks());
 
             if (warningMessage != null) {
-                return "Event added with a warning:\n" + warningMessage.toString() +
-                        "\nNew event added: " + taskDescription +
-                        "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
+                return "Event added with a warning:\n" + warningMessage
+                        + "\nNew event added: " + taskDescription
+                        + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
             } else {
-                return "Got it. I've added this event task:\n" + taskDescription +
-                        "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
+                return "Got it. I've added this event task:\n" + taskDescription
+                        + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
             }
 
         } catch (DateTimeParseException e) {

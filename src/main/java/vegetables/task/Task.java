@@ -11,10 +11,6 @@ public abstract class Task {
     protected String description;
     protected boolean isDone;
 
-    public String getDescription() {
-        return description;
-    }
-
     /**
      * Constructs a new Task with the specified description.
      * The task is initially marked as not done.
@@ -24,6 +20,15 @@ public abstract class Task {
     public Task(String description) {
         this.description = description;
         this.isDone = false;
+    }
+
+    /**
+     * Retrieves the description of the task.
+     *
+     * @return the description of the task.
+     */
+    public String getDescription() {
+        return description;
     }
 
     /**
@@ -65,6 +70,10 @@ public abstract class Task {
      * @return A reconstructed Task object.
      * @throws VeggieException If the string format is invalid or the task type is unrecognized.
      */
+
+    // Issue with 'wrong' indentation of cae/default statements that cannot be fixed.
+    @SuppressWarnings("CheckStyle")
+
     public static Task fromFileString(String taskString) throws VeggieException {
         String[] parts = taskString.split(" \\| ");
         String taskType = parts[0];

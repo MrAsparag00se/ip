@@ -1,10 +1,11 @@
 package vegetables.gui;
 
-import vegetables.task.Task;
+import java.util.ArrayList;
+
+import vegetables.command.CommandHandler;
 import vegetables.manager.TaskManager;
 import vegetables.storage.TaskStorage;
-import vegetables.command.CommandHandler;
-import java.util.ArrayList;
+import vegetables.task.Task;
 
 /**
  * The main logic handler for the Vegetables application.
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  * appropriate responses.
  * </p>
  */
-public class VegetablesGUI {
+public class VegetablesGui {
     private final CommandHandler commandHandler;
 
     /**
@@ -24,7 +25,7 @@ public class VegetablesGUI {
      * and setting up a {@link CommandHandler} to process user commands.
      * </p>
      */
-    public VegetablesGUI() {
+    public VegetablesGui() {
         TaskStorage taskStorage = new TaskStorage();
         ArrayList<Task> tasks = taskStorage.loadTasks();
         TaskManager taskManager = new TaskManager(tasks);

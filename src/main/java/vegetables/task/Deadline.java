@@ -1,18 +1,19 @@
 package vegetables.task;
 
-import vegetables.exception.VeggieException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import vegetables.exception.VeggieException;
 
 /**
  * Represents a 'Deadline' task.
  * The deadline is stored as a LocalDateTime object.
  */
 public class Deadline extends Task {
-    private final LocalDateTime by;
     private static final DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private static final DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
+    private final LocalDateTime by;
 
     /**
      * Constructs a new Deadline task with the specified description and deadline.
@@ -35,7 +36,7 @@ public class Deadline extends Task {
      *
      * @param description The description of the deadline task.
      * @param by          The deadline in the format "yyyy-MM-dd HH:mm".
-     * @param isDone      The completion status of the deadline task. {@code true} if the task is done, {@code false} otherwise.
+     * @param isDone      The completion status of deadline task. {@code true} if task is done, {@code false} otherwise.
      * @throws VeggieException If the provided deadline is not in the expected format.
      */
     public Deadline(String description, String by, boolean isDone) throws VeggieException {
@@ -44,7 +45,7 @@ public class Deadline extends Task {
     }
 
     /**
-     * Returns a string representation of the Deadline task, including its type, completion status, description, and deadline.
+     * Returns a representation of the Deadline task, including its type, completion status, description, and deadline.
      * The format is: "D [status] description (by: formatted deadline)".
      *
      * @return A string representation of the Deadline task.

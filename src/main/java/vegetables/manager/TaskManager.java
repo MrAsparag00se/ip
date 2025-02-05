@@ -1,13 +1,14 @@
 package vegetables.manager;
 
-import vegetables.task.Task;
-import vegetables.task.ToDo;
-import vegetables.task.Deadline;
-import vegetables.task.Event;
-import vegetables.exception.VeggieException;
-import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+import vegetables.exception.VeggieException;
+import vegetables.task.Deadline;
+import vegetables.task.Event;
+import vegetables.task.Task;
+import vegetables.task.ToDo;
 
 /**
  * TaskManager is responsible for managing a list of tasks. It supports adding various
@@ -81,7 +82,7 @@ public class TaskManager {
      * @param description The description of the Event task to be added.
      * @param from The start time of the event, in the format yyyy-MM-dd HH:mm.
      * @param to The end time of the event, in the format yyyy-MM-dd HH:mm.
-     * @throws VeggieException If the description, start time, or end time is empty, or if the date/time format is incorrect.
+     * @throws VeggieException If any field is empty or, format is incorrect.
      */
     public void addEventTask(String description, String from, String to) throws VeggieException {
         // Check if the description, from, or to is missing
@@ -114,8 +115,10 @@ public class TaskManager {
         for (Task task : tasks) {
             if (task instanceof Event) {
                 Event existingEvent = (Event) task;
-                LocalDateTime existingFrom = LocalDateTime.parse(existingEvent.getFrom(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                LocalDateTime existingTo = LocalDateTime.parse(existingEvent.getTo(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                LocalDateTime existingFrom = LocalDateTime.parse(existingEvent.getFrom(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                LocalDateTime existingTo = LocalDateTime.parse(existingEvent.getTo(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
                 // Check if there's an overlap
                 if ((newFrom.isBefore(existingTo) && newTo.isAfter(existingFrom))) {
@@ -189,7 +192,7 @@ public class TaskManager {
      * @return A list of tasks whose descriptions contain the substring.
      */
     public ArrayList<Task> findTasksBySubstring(String keyword) {
-        ArrayList<Task> matchingTasks = new ArrayList<>();  // List for storing matching tasks
+        ArrayList<Task> matchingTasks = new ArrayList<>(); // List for storing matching tasks
         for (Task task : tasks) {
             if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
                 matchingTasks.add(task);

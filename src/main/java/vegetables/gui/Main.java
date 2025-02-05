@@ -1,6 +1,7 @@
 package vegetables.gui;
 
 import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,13 +16,13 @@ import javafx.stage.Stage;
  * </p>
  */
 public class Main extends Application {
-    private VegetablesGUI vegetablesGUI = new VegetablesGUI();
+    private final VegetablesGui vegetablesGui = new VegetablesGui();
 
     /**
      * Starts the JavaFX application by setting up the primary stage.
      * <p>
      * Loads the {@code MainWindow.fxml} layout, sets the scene, and initializes the
-     * {@link VegetablesGUI} instance for handling interactions.
+     * {@link VegetablesGui} instance for handling interactions.
      * </p>
      *
      * @param stage The primary stage for the JavaFX application.
@@ -33,7 +34,7 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setVegetablesGUI(vegetablesGUI);
+            fxmlLoader.<MainWindow>getController().setVegetablesGui(vegetablesGui);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

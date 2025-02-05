@@ -1,11 +1,12 @@
 package vegetables;
 
-import vegetables.command.CommandHandler;
-import vegetables.manager.TaskManager;
-import vegetables.task.Task;
-import vegetables.storage.TaskStorage;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import vegetables.command.CommandHandler;
+import vegetables.manager.TaskManager;
+import vegetables.storage.TaskStorage;
+import vegetables.task.Task;
 
 /**
  * Runs the Vegetables program, that supports creating, listing,

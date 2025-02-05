@@ -18,23 +18,23 @@ public class MainWindow extends ScrollPane {
     @FXML private VBox dialogContainer;
     @FXML private TextField userInput;
 
-    private VegetablesGUI vegetablesGUI;
-    private Image userImage = new Image(getClass().getResourceAsStream("/images/User.png"));
-    private Image veggieImage = new Image(getClass().getResourceAsStream("/images/Vegetables.png"));
+    private VegetablesGui vegetablesGui;
+    private final Image userImage = new Image(getClass().getResourceAsStream("/images/User.png"));
+    private final Image veggieImage = new Image(getClass().getResourceAsStream("/images/Vegetables.png"));
 
     /**
-     * Sets the instance of {@link VegetablesGUI} that handles user input and responses.
+     * Sets the instance of {@link VegetablesGui} that handles user input and responses.
      *
-     * @param vegetablesGUI The instance of {@link VegetablesGUI} to be linked to this window.
+     * @param vegetablesGui The instance of {@link VegetablesGui} to be linked to this window.
      */
-    public void setVegetablesGUI(VegetablesGUI vegetablesGUI) {
-        this.vegetablesGUI = vegetablesGUI;
+    public void setVegetablesGui(VegetablesGui vegetablesGui) {
+        this.vegetablesGui = vegetablesGui;
     }
 
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
-        String response = vegetablesGUI.getResponse(input);
+        String response = vegetablesGui.getResponse(input);
 
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),

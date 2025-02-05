@@ -1,14 +1,15 @@
 package vegetables.storage;
 
-import vegetables.task.Task;
-import vegetables.exception.VeggieException;
-import java.util.ArrayList;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.FileWriter;
-import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import vegetables.exception.VeggieException;
+import vegetables.task.Task;
 
 /**
  * The TaskStorage class is responsible for saving and loading tasks to and from a file.
@@ -47,7 +48,7 @@ public class TaskStorage {
     }
 
     private void createParentDirectories(File file) {
-        file.getParentFile().mkdirs();  // Create parent directories if they don't exist
+        file.getParentFile().mkdirs(); // Create parent directories if they don't exist
     }
 
     private void writeTasksToFile(BufferedWriter writer, ArrayList<Task> tasks) throws IOException {
@@ -80,7 +81,7 @@ public class TaskStorage {
         // Check if the file exists and load the tasks
         File file = new File(FILE_PATH);
         if (!file.exists()) {
-            return tasks;  // Return empty list if the file doesn't exist
+            return tasks; // Return empty list if the file doesn't exist
         }
 
         try (Scanner fileScanner = new Scanner(file)) {
@@ -96,7 +97,7 @@ public class TaskStorage {
         while (fileScanner.hasNextLine()) {
             String line = fileScanner.nextLine();
             try {
-                Task task = Task.fromFileString(line);  // This can throw VeggieException
+                Task task = Task.fromFileString(line); // This can throw VeggieException
                 tasks.add(task);
             } catch (VeggieException e) {
                 System.out.println("Error parsing task from file: " + e.getMessage());
