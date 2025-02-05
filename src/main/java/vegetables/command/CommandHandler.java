@@ -136,9 +136,6 @@ public class CommandHandler {
 
     private String handleAddDeadline(String userInput) {
         try {
-            assert userInput.contains("/by")
-                    : "Deadline command missing 'by' argument.";
-
             if (!userInput.contains("/by")) {
                 throw new VeggieException("Correct format: deadline [Task description] /by [yyyy-MM-dd HH:mm]");
             }
@@ -164,8 +161,6 @@ public class CommandHandler {
             if (deadlineDateTime.isBefore(LocalDateTime.now())) {
                 return "Error: Deadline cannot be in the past!";
             }
-            assert !deadlineDateTime.isBefore(LocalDateTime.now())
-                    : "Deadline is in the past!";
 
             if (taskManager.taskExists(taskDescription)) {
                 return "Duplicate task detected! Task already exists.";
@@ -183,9 +178,6 @@ public class CommandHandler {
 
     private String handleAddEvent(String userInput, TaskManager taskManager) {
         try {
-            assert userInput.contains("/from") && userInput.contains("/to")
-                    : "Event command missing 'from' or 'to' argument.";
-
             if (!userInput.contains("/from") || !userInput.contains("/to")) {
                 throw new VeggieException("Correct format: event [Task description] /from [Start time] /to [End time]");
             }
@@ -208,14 +200,9 @@ public class CommandHandler {
             // Check for event clash using the abstracted method
             StringBuilder warningMessage = taskManager.checkEventClash(fromDateTime, toDateTime);
 
-            // Check if start or end time is in the past
             if (fromDateTime.isBefore(LocalDateTime.now()) || toDateTime.isBefore(LocalDateTime.now())) {
                 return "Error: Event times cannot be in the past!";
             }
-            assert !fromDateTime.isBefore(LocalDateTime.now())
-                    : "Deadline is in the past!";
-
-            // Check if start time is after end time
             if (fromDateTime.isAfter(toDateTime)) {
                 return "Error: Start time cannot be after end time!";
             }
@@ -294,8 +281,6 @@ public class CommandHandler {
     private String handleDeleteTask(String userInput) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
-            assert taskNumber > 0 && taskNumber <= taskManager.getTasks().size()
-                    : "Task number out of valid range!";
             taskManager.deleteTask(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
             return "Task deleted.\n" + listTasks(); // Return the updated task list
