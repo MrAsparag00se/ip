@@ -57,43 +57,40 @@ public class CommandHandler {
      * @param userInput The command input provided by the user.
      * @return A response message indicating the result of executing the command.
      */
+
+    // Issue with 'wrong' indentation of cae/default statements that cannot be fixed.
+    @SuppressWarnings("CheckStyle")
+
     public String executeCommand(String userInput) {
-        String result;
-        if (userInput.equalsIgnoreCase("help")) {
-            result = displayHelp();
-        } else if (userInput.equalsIgnoreCase("list")) {
-            result = listTasks();
-        } else if (userInput.startsWith("todo")) {
-            result = handleAddToDo(userInput);
-        } else if (userInput.startsWith("deadline")) {
-            result = handleAddDeadline(userInput);
-        } else if (userInput.startsWith("event")) {
-            result = handleAddEvent(userInput, taskManager);
-        } else if (userInput.startsWith("mark")) {
-            result = handleMarkTask(userInput);
-        } else if (userInput.startsWith("unmark")) {
-            result = handleUnmarkTask(userInput);
-        } else if (userInput.startsWith("find")) {
-            result = handleFindTask(userInput);
-        } else if (userInput.startsWith("delete")) {
-            result = handleDeleteTask(userInput);
-        } else if (userInput.equalsIgnoreCase("bye")) {
-            taskStorage.saveTasks(taskManager.getTasks());
-            result = "Bye. Hope to see you again soon!";
-
-            System.out.println(result);
-            try {
-                Thread.sleep(2000); // Pause for 2 seconds
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Restore interrupted status
+        Command command = Command.fromInput(userInput);
+        return switch (command) {
+            case HELP -> displayHelp();
+            case LIST -> listTasks();
+            case TODO -> handleAddToDo(userInput);
+            case DEADLINE -> handleAddDeadline(userInput);
+            case EVENT -> handleAddEvent(userInput, taskManager);
+            case MARK -> handleMarkTask(userInput);
+            case UNMARK -> handleUnmarkTask(userInput);
+            case FIND -> handleFindTask(userInput);
+            case DELETE -> handleDeleteTask(userInput);
+            case BYE -> {
+                handleExit();
+                yield "";
             }
-            System.exit(0);
-        } else {
-            result = "Unrecognised command!";
-        }
-        return result;
+            default -> "Unrecognised command!";
+        };
     }
-
+    private void handleExit() {
+        taskStorage.saveTasks(taskManager.getTasks());
+        String result = "Bye. Hope to see you again soon!";
+        System.out.println(result);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        System.exit(0);
+    }
     private String displayHelp() {
         return " Available Commands:\n"
                 + " - todo [Task description]: Adds a task without a deadline.\n"
@@ -106,7 +103,6 @@ public class CommandHandler {
                 + " - delete [Task number]: Deletes a task from the list.\n"
                 + " - bye: Exits the program.\n";
     }
-
     private String listTasks() {
         StringBuilder result = new StringBuilder();
         ArrayList<Task> tasks = taskManager.getTasks();
