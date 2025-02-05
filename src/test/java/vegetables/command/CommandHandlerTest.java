@@ -1,28 +1,33 @@
 package vegetables.command;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import vegetables.exception.VeggieException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.any;
+import org.junit.jupiter.api.Test;
+
+import vegetables.exception.VeggieException;
 import vegetables.manager.TaskManager;
 import vegetables.storage.TaskStorage;
 import vegetables.task.Task;
-
 public class CommandHandlerTest {
 
     @Test
-    void executeCommand_HelpCommand_ReturnsHelpMessage() {
+    void executeCommand_helpCommand_returnsHelpMessage() {
         // Mock dependencies
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
@@ -46,7 +51,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void executeCommand_ListWhenNoTasks_ReturnsNoTasksMessage() {
+    void executeCommand_listWhenNoTasks_returnsNoTasksMessage() {
         // Mock dependencies
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
@@ -64,7 +69,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void executeCommand_ListWithTasks_ReturnsFormattedTasks() {
+    void executeCommand_listWithTasks_returnsFormattedTasks() {
         // Mock dependencies
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
@@ -88,15 +93,15 @@ public class CommandHandlerTest {
 
         // Verify output format
         String expectedOutput =
-                "Here are the tasks in your list:\n" +
-                        "1.[T][ ] Read book\n" +
-                        "2.[D][ ] Submit report (by: 2023-10-10)\n";
+                "Here are the tasks in your list:\n"
+                        + "1.[T][ ] Read book\n"
+                        + "2.[D][ ] Submit report (by: 2023-10-10)\n";
 
         assertEquals(expectedOutput, result);
     }
 
     @Test
-    void executeCommand_AddValidTodo_ReturnsSuccessMessage() {
+    void executeCommand_addValidTodo_returnsSuccessMessage() {
         // Mock dependencies
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
@@ -117,7 +122,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void executeCommand_AddDuplicateTodo_ReturnsErrorMessage() {
+    void executeCommand_addDuplicateTodo_returnsErrorMessage() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
 
@@ -134,7 +139,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void executeCommand_AddEmptyTodo_ReturnsSuccessWithEmptyDescription() {
+    void executeCommand_addEmptyTodo_returnsSuccessWithEmptyDescription() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
 
@@ -152,7 +157,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddDeadline_ValidInput_AddsTaskAndReturnsSuccess() {
+    void handleAddDeadline_validInput_addsTaskAndReturnsSuccess() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -180,7 +185,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddDeadline_MissingByKeyword_ReturnsFormatError() {
+    void handleAddDeadline_missingByKeyword_returnsFormatError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -188,7 +193,8 @@ public class CommandHandlerTest {
         String invalidInput = "deadline Finish assignment";
         String result = handler.executeCommand(invalidInput);
 
-        assertEquals("Error adding deadline task: Correct format: deadline [Task description] /by [yyyy-MM-dd HH:mm]", result);
+        assertEquals("Error adding deadline task: Correct format: deadline [Task description] "
+                + "/by [yyyy-MM-dd HH:mm]", result);
         try {
             verify(mockTaskManager, never()).addDeadlineTask(anyString(), anyString());
         } catch (VeggieException e) {
@@ -198,7 +204,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddDeadline_InvalidDateFormat_ReturnsParseError() {
+    void handleAddDeadline_invalidDateFormat_returnsParseError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -216,7 +222,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddDeadline_PastDeadline_ReturnsPastDateError() {
+    void handleAddDeadline_pastDeadline_returnsPastDateError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -238,7 +244,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddDeadline_DuplicateTask_ReturnsDuplicateError() {
+    void handleAddDeadline_duplicateTask_returnsDuplicateError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -268,7 +274,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddDeadline_EmptyDescription_HandlesGracefully() {
+    void handleAddDeadline_emptyDescription_handlesGracefully() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -286,7 +292,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_ValidInput_AddsTaskAndReturnsSuccess() {
+    void handleAddEvent_validInput_addsTaskAndReturnsSuccess() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -322,7 +328,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_MissingFromOrTo_ReturnsFormatError() {
+    void handleAddEvent_missingFromOrTo_returnsFormatError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -330,7 +336,8 @@ public class CommandHandlerTest {
         String invalidInput = "event Project workshop /to 2024-12-01 14:00";
         String result = handler.executeCommand(invalidInput);
 
-        assertEquals("Error adding event task: Correct format: event [Task description] /from [Start time] /to [End time]", result);
+        assertEquals("Error adding event task: Correct format: event [Task description] "
+                + "/from [Start time] /to [End time]", result);
         try {
             verify(mockTaskManager, never()).addEventTask(anyString(), anyString(), anyString());
         } catch (VeggieException e) {
@@ -339,7 +346,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_InvalidDateFormat_ReturnsParseError() {
+    void handleAddEvent_invalidDateFormat_returnsParseError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -356,7 +363,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_PastEventTime_ReturnsPastTimeError() {
+    void handleAddEvent_pastEventTime_returnsPastTimeError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -376,7 +383,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_StartAfterEnd_ReturnsTimeOrderError() {
+    void handleAddEvent_startAfterEnd_returnsTimeOrderError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -394,7 +401,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_DuplicateTask_ReturnsDuplicateError() {
+    void handleAddEvent_duplicateTask_returnsDuplicateError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -418,7 +425,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_EventClash_ReturnsWarning() {
+    void handleAddEvent_eventClash_returnsWarning() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -431,7 +438,9 @@ public class CommandHandlerTest {
         String validInput = "event Team meeting /from 2030-12-01 14:00 /to 2030-12-01 16:00";
         String result = handler.executeCommand(validInput);
 
-        assertEquals("Event added with a warning:\nWarning: Clashes with existing event 'Project Review'\nNew event added: Team meeting\nNow you have 0 tasks in the list.", result);
+        assertEquals("Event added with a warning:\nWarning: "
+                + "Clashes with existing event 'Project Review'\nNew event added: "
+                + "Team meeting\nNow you have 0 tasks in the list.", result);
         try {
             verify(mockTaskManager).addEventTask(anyString(), anyString(), anyString());
         } catch (VeggieException e) {
@@ -440,7 +449,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleAddEvent_EmptyDescription_ReturnsError() {
+    void handleAddEvent_emptyDescription_returnsError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -458,7 +467,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleFindTask_ValidSubstring_ReturnsMatchingTasks() {
+    void handleFindTask_validSubstring_returnsMatchingTasks() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -481,16 +490,16 @@ public class CommandHandlerTest {
         String result = handler.executeCommand("find Thi");
 
         String expectedOutput =
-                "Here are the matching tasks in your list:\n" +
-                        "1.[T][ ] This is cold\n" +
-                        "2.[T][ ] This is hot\n" +
-                        "3.[E][ ] Thicken (from: 2024-01-01 10:00 to: 2024-01-01 12:00)\n";
+                "Here are the matching tasks in your list:\n"
+                        + "1.[T][ ] This is cold\n"
+                        + "2.[T][ ] This is hot\n"
+                        + "3.[E][ ] Thicken (from: 2024-01-01 10:00 to: 2024-01-01 12:00)\n";
 
         assertEquals(expectedOutput, result);
     }
 
     @Test
-    void handleFindTask_NoMatches_ReturnsNoTasksMessage() {
+    void handleFindTask_noMatches_returnsNoTasksMessage() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -504,7 +513,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleFindTask_EmptyKeyword_ReturnsErrorMessage() {
+    void handleFindTask_emptyKeyword_returnsErrorMessage() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -515,7 +524,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleDeleteTask_ValidTaskNumber_DeletesTaskAndReturnsUpdatedList() {
+    void handleDeleteTask_validTaskNumber_deletesTaskAndReturnsUpdatedList() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -560,7 +569,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleDeleteTask_OutOfBoundsTaskNumber_ReturnsError() {
+    void handleDeleteTask_outOfBoundsTaskNumber_returnsError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -585,7 +594,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleMarkTask_ValidTaskNumber_MarksTaskAndReturnsUpdatedList() {
+    void handleMarkTask_validTaskNumber_marksTaskAndReturnsUpdatedList() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -614,7 +623,7 @@ public class CommandHandlerTest {
 
 
     @Test
-    void handleMarkTask_OutOfBoundsTaskNumber_ReturnsError() {
+    void handleMarkTask_outOfBoundsTaskNumber_returnsError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -639,7 +648,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleUnmarkTask_ValidTaskNumber_UnmarksTaskAndReturnsUpdatedList() {
+    void handleUnmarkTask_validTaskNumber_unmarksTaskAndReturnsUpdatedList() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
@@ -666,7 +675,7 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void handleUnmarkTask_OutOfBoundsTaskNumber_ReturnsError() {
+    void handleUnmarkTask_outOfBoundsTaskNumber_returnsError() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
