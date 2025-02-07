@@ -34,12 +34,12 @@ Example:
 ---
 
 ### ✅ **2. Mark & Unmark Tasks**  
-- **Mark as done**:  
+- **Mark as done**:
 ```mark <task number>```  
 Example:  
 ```mark 1```
 
-- **Unmark as not done**:  
+- **Unmark as not done**:
 ```unmark <task number>```  
 Example:  
 ```unmark 1```
@@ -54,7 +54,7 @@ Example:
 ---
 
 ### 🔍 **4. Find Tasks**  
-Find tasks containing a specific keyword/substring:  
+Find tasks containing a specific keyword/substring:
 ```find <keyword>```  
 Example:
 ```find report```
@@ -62,7 +62,7 @@ Example:
 ---
 
 ### 📋 **5. View Task List**  
-Displays all your tasks:  
+Displays all your tasks:
 ```list```
 
 ---
