@@ -56,7 +56,7 @@ Example:
 ### 🔍 **4. Find Tasks**  
 Find tasks containing a specific keyword/substring:
 ```find <keyword>```  
-Example:
+Example:  
 ```find report```
 
 ---
