@@ -1,6 +1,3 @@
-EVENT | 0 | there | 1212-12-12 12:12 | 1212-12-12 13:12
-EVENT | 0 | this thing | 2025-04-04 12:00 | 2025-04-04 15:00
-EVENT | 0 | overlapping thing | 2025-04-04 12:15 | 2025-04-04 12:30
-TODO | X | add
-DEADLINE | 0 | blabla | 2025-04-04 12:12
-EVENT | 0 | this thing again | 2025-04-04 12:00 | 2025-04-04 20:00
+TODO | X | get some carrots for bake-off
+DEADLINE | 0 | bake veggie pie | 2025-04-04 23:59
+EVENT | 0 | win veggie bake-off | 2025-04-05 12:00 | 2025-04-05 15:00
