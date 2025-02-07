@@ -1,30 +1,91 @@
-# Vegetables User Guide
+# **Vegetables - User Guide**  
+*Your personal task manager chatbot!*  
 
-// Update the title above to match the actual product name
+![Vegetables Screenshot](Ui.png)
 
-// Product screenshot goes here
+## **Introduction**  
+Vegetables is a smart chatbot designed to help you manage your tasks efficiently. It supports **To-Dos, Deadlines, and Events**, allowing you to add, list, find, and delete tasks easily.  
 
-// Product intro goes here
+## **Quick Start**  
+1. Ensure you have **Java 11** or later installed.  
+2. Download `vegetables.jar`.  
+3. Open a terminal or command prompt and run:  
+4. Start managing your tasks!  
 
-## Adding deadlines
+## **Features**  
 
-// Describe the action and its outcome.
+### 📌 **1. Add a Task**  
+You can add three types of tasks:  
+- **To-Do**:
+```todo <task description>```
+Example:
+```todo Buy groceries```
 
-// Give examples of usage
+- **Deadline**:
+```deadline <task description> /by YYYY-MM-DD HH:mm```
+Example:
+```deadline Submit report /by 2025-12-12 18:00```
+ 
+- **Event**:  
+```event <event description> /from YYYY-MM-DD HH:mm /to YYYY-MM-DD HH:mm```
+Example:
+```event Project meeting /from 2025-12-12 14:00 /to 2025-12-12 16:00```
 
-Example: `keyword (optional arguments)`
+---
 
-// A description of the expected outcome goes here
+### ✅ **2. Mark & Unmark Tasks**  
+- **Mark as done**:  
+```mark <task number>```
+Example:  
+```mark 1```
 
-```
-expected output
-```
+- **Unmark as not done**:  
+```unmark <task number>```
+Example:  
+```unmark 1```
 
-## Feature ABC
+---
 
-// Feature details
+### 🗑️ **3. Delete a Task**  
+```delete <task number>```
+Example:  
+```delete 2```
 
+---
 
-## Feature XYZ
+### 🔍 **4. Find Tasks**  
+Find tasks containing a specific keyword/substring:  
+```find <keyword>```
+Example:  
+```find report```
 
-// Feature details
+---
+
+### 📋 **5. View Task List**  
+Displays all your tasks.
+```list```
+
+---
+
+### ❓ **7. Help**  
+Displays a list of commands:  
+```help```
+
+---
+
+## **Command Summary**  
+
+| Action         | Format Example |
+|---------------|---------------|
+| Add To-Do     | `todo Buy milk` |
+| Add Deadline  | `deadline Submit report /by 2025-12-12 18:00` |
+| Add Event     | `event Meeting /from 2025-12-12 14:00 /to 2025-12-12 16:00` |
+| List Tasks    | `list` |
+| Mark Task     | `mark 1` |
+| Unmark Task   | `unmark 1` |
+| Delete Task   | `delete 2` |
+| Find Tasks    | `find report` |
+| Help          | `help` |
+
+---
+
