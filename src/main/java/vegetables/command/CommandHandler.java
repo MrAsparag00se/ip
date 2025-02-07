@@ -146,7 +146,7 @@ public class CommandHandler {
                 throw new VeggieException("Missing deadline date. Use: /by [yyyy-MM-dd HH:mm]");
             }
 
-            String taskDescription = parts[0].substring(9).trim(); // "deadline " is 9 characters
+            String taskDescription = parts[0].substring(9).trim();
             String by = parts[1].trim();
 
             // Validate description is not empty
