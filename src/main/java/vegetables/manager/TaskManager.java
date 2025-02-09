@@ -85,7 +85,6 @@ public class TaskManager {
      * @throws VeggieException If any field is empty or, format is incorrect.
      */
     public void addEventTask(String description, String from, String to) throws VeggieException {
-        // Check if the description, from, or to is missing
         if (description == null || description.trim().isEmpty()) {
             throw new VeggieException("Event description cannot be empty.");
         }
@@ -128,7 +127,6 @@ public class TaskManager {
                 }
             }
         }
-
         return warningMessage.length() > 0 ? warningMessage : null;
     }
 
