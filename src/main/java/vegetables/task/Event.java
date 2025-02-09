@@ -27,12 +27,23 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) throws VeggieException {
         super(description);
+        // Assertions to check validity
+        assert description != null && !description.isEmpty() : "Event description cannot be null or empty";
+        assert from != null && !from.isEmpty() : "Start time cannot be null or empty";
+        assert to != null && !to.isEmpty() : "End time cannot be null or empty";
+
         try {
             this.from = LocalDateTime.parse(from, inputFormatter);
             this.to = LocalDateTime.parse(to, inputFormatter);
+            // Validate the start time is before the end time
+            assert this.from.isBefore(this.to) : "Start time cannot be after end time";
+
         } catch (DateTimeParseException e) {
             throw new VeggieException("Invalid date format! Use yyyy-MM-dd HH:mm (e.g., 2023-01-22 18:00)");
         }
+        // Ensure the times are valid after parsing
+        assert this.from != null && this.to != null : "Parsed from/to times cannot be null";
+
     }
 
     /**
