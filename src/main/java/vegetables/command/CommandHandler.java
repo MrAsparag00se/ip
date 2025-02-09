@@ -28,6 +28,9 @@ public class CommandHandler {
      * @param taskStorage The TaskStorage used for saving and loading tasks from a file.
      */
     public CommandHandler(TaskManager taskManager, TaskStorage taskStorage) {
+        assert taskManager != null : "TaskManager should not be null";
+        assert taskStorage != null : "TaskStorage should not be null";
+
         this.taskManager = taskManager;
         this.taskStorage = taskStorage;
     }
@@ -62,7 +65,11 @@ public class CommandHandler {
     @SuppressWarnings("CheckStyle")
 
     public String executeCommand(String userInput) {
+        assert userInput != null : "User input should not be null";
+
         Command command = Command.fromInput(userInput);
+        assert command != null : "Command should not be null";
+
         return switch (command) {
             case HELP -> displayHelp();
             case LIST -> listTasks();
@@ -82,6 +89,7 @@ public class CommandHandler {
     }
     private void handleExit() {
         taskStorage.saveTasks(taskManager.getTasks());
+        assert taskManager.getTasks() != null : "Task list should not be null after saving";
         String result = "Bye. Hope to see you again soon!";
         System.out.println(result);
         try {
@@ -106,11 +114,13 @@ public class CommandHandler {
     private String listTasks() {
         StringBuilder result = new StringBuilder();
         ArrayList<Task> tasks = taskManager.getTasks();
+        assert tasks != null : "Task list should not be null";
         if (tasks.isEmpty()) {
             result.append("No tasks added.\n");
         } else {
             result.append("Here are the tasks in your list:\n");
             for (int i = 0; i < tasks.size(); i++) {
+                assert tasks.get(i) != null : "Task should not be null";
                 // Add 1 for 1-indexing
                 result.append((i + 1) + "." + tasks.get(i) + "\n");
             }
@@ -118,6 +128,7 @@ public class CommandHandler {
         return result.toString();
     }
     private String handleAddToDo(String userInput) {
+        assert userInput.startsWith("todo") : "Invalid ToDo command format";
         String taskDescription = "";
 
         // Extract description only if input is longer than "todo "
@@ -128,7 +139,6 @@ public class CommandHandler {
         if (taskManager.taskExists(taskDescription)) {
             return "Duplicate task detected! Task already exists.";
         }
-
         taskManager.addToDoTask(taskDescription);
         taskStorage.saveTasks(taskManager.getTasks());
         return "Got it. I've added this task: " + taskDescription;
@@ -254,14 +264,19 @@ public class CommandHandler {
 
     private String handleFindTask(String userInput) {
         try {
+            assert userInput != null : "User input should not be null";
+            assert userInput.startsWith("find") : "Command should start with 'find'";
+
             if (userInput.length() <= 5) {
                 throw new VeggieException("Please provide a keyword to search. Correct format: find [keyword]");
             }
 
             String keyword = userInput.substring(5).trim();
+            assert !keyword.isEmpty() : "Keyword should not be empty after trimming";
 
             // Delegate the task searching to TaskManager
             ArrayList<Task> matchingTasks = taskManager.findTasksBySubstring(keyword);
+            assert matchingTasks != null : "findTasksBySubstring() should not return null";
 
             StringBuilder result = new StringBuilder();
             if (matchingTasks.isEmpty()) {
@@ -269,6 +284,7 @@ public class CommandHandler {
             } else {
                 result.append("Here are the matching tasks in your list:\n");
                 for (int i = 0; i < matchingTasks.size(); i++) {
+                    assert matchingTasks.get(i) != null : "Task in the matching list should not be null";
                     result.append((i + 1) + "." + matchingTasks.get(i) + "\n");
                 }
             }
@@ -281,6 +297,7 @@ public class CommandHandler {
     private String handleDeleteTask(String userInput) {
         try {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
+            assert taskNumber > 0 : "Task number should be positive";
             taskManager.deleteTask(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
             return "Task deleted.\n" + listTasks(); // Return the updated task list
