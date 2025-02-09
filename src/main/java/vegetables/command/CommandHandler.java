@@ -60,7 +60,6 @@ public class CommandHandler {
 
     // Issue with 'wrong' indentation of cae/default statements that cannot be fixed.
     @SuppressWarnings("CheckStyle")
-
     public String executeCommand(String userInput) {
         Command command = Command.fromInput(userInput);
         return switch (command) {
@@ -80,6 +79,7 @@ public class CommandHandler {
             default -> "Unrecognised command!";
         };
     }
+
     private void handleExit() {
         taskStorage.saveTasks(taskManager.getTasks());
         String result = "Bye. Hope to see you again soon!";
@@ -91,6 +91,7 @@ public class CommandHandler {
         }
         System.exit(0);
     }
+
     private String displayHelp() {
         return " Available Commands:\n"
                 + " - todo [Task description]: Adds a task without a deadline.\n"
@@ -103,6 +104,7 @@ public class CommandHandler {
                 + " - delete [Task number]: Deletes a task from the list.\n"
                 + " - bye: Exits the program.\n";
     }
+
     private String listTasks() {
         StringBuilder result = new StringBuilder();
         ArrayList<Task> tasks = taskManager.getTasks();
@@ -117,18 +119,15 @@ public class CommandHandler {
         }
         return result.toString();
     }
+
     private String handleAddToDo(String userInput) {
         String taskDescription = "";
-
-        // Extract description only if input is longer than "todo "
         if (userInput.length() > 4) {
             taskDescription = userInput.substring(5).trim();
         }
-
         if (taskManager.taskExists(taskDescription)) {
             return "Duplicate task detected! Task already exists.";
         }
-
         taskManager.addToDoTask(taskDescription);
         taskStorage.saveTasks(taskManager.getTasks());
         return "Got it. I've added this task: " + taskDescription;
@@ -139,16 +138,13 @@ public class CommandHandler {
             if (!userInput.contains("/by")) {
                 throw new VeggieException("Correct format: deadline [Task description] /by [yyyy-MM-dd HH:mm]");
             }
-
             String[] parts = userInput.split("/by");
-            // Handle missing "/by" value
             if (parts.length < 2) {
                 throw new VeggieException("Missing deadline date. Use: /by [yyyy-MM-dd HH:mm]");
             }
 
             String taskDescription = parts[0].substring(9).trim();
             String by = parts[1].trim();
-
             // Validate description is not empty
             if (taskDescription.isEmpty()) {
                 throw new VeggieException("Task description cannot be empty!");
@@ -157,17 +153,16 @@ public class CommandHandler {
             // Validate date format
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime deadlineDateTime = LocalDateTime.parse(by, formatter);
-
             if (deadlineDateTime.isBefore(LocalDateTime.now())) {
                 return "Error: Deadline cannot be in the past!";
             }
-
             if (taskManager.taskExists(taskDescription)) {
                 return "Duplicate task detected! Task already exists.";
             }
 
             taskManager.addDeadlineTask(taskDescription, by);
             taskStorage.saveTasks(taskManager.getTasks());
+
             return "Got it. I've added this deadline task: " + taskDescription;
         } catch (DateTimeParseException e) {
             return "Error: Invalid time or time format. Use: yyyy-MM-dd HH:mm";
@@ -199,18 +194,15 @@ public class CommandHandler {
 
             // Check for event clash using the abstracted method
             StringBuilder warningMessage = taskManager.checkEventClash(fromDateTime, toDateTime);
-
             if (fromDateTime.isBefore(LocalDateTime.now()) || toDateTime.isBefore(LocalDateTime.now())) {
                 return "Error: Event times cannot be in the past!";
             }
             if (fromDateTime.isAfter(toDateTime)) {
                 return "Error: Start time cannot be after end time!";
             }
-
             if (taskManager.taskExists(taskDescription)) {
                 return "Duplicate task detected! Task already exists.";
             }
-
             taskManager.addEventTask(taskDescription, from, to);
             taskStorage.saveTasks(taskManager.getTasks());
 
@@ -257,7 +249,6 @@ public class CommandHandler {
             if (userInput.length() <= 5) {
                 throw new VeggieException("Please provide a keyword to search. Correct format: find [keyword]");
             }
-
             String keyword = userInput.substring(5).trim();
 
             // Delegate the task searching to TaskManager
