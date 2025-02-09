@@ -24,8 +24,15 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String by) throws VeggieException {
         super(description);
+        // Assertions to check validity
+        assert description != null && !description.isEmpty() : "Deadline description cannot be null or empty";
+        assert by != null && !by.isEmpty() : "Deadline cannot be null or empty";
+
         try {
             this.by = LocalDateTime.parse(by, inputFormatter);
+            // Ensure deadline is not in the past
+            assert this.by.isAfter(LocalDateTime.now()) : "Deadline cannot be in the past";
+
         } catch (DateTimeParseException e) {
             throw new VeggieException("Invalid date format! Use yyyy-MM-dd HH:mm (e.g., 2023-01-22 18:00)");
         }

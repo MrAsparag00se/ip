@@ -264,14 +264,19 @@ public class CommandHandler {
 
     private String handleFindTask(String userInput) {
         try {
+            assert userInput != null : "User input should not be null";
+            assert userInput.startsWith("find") : "Command should start with 'find'";
+
             if (userInput.length() <= 5) {
                 throw new VeggieException("Please provide a keyword to search. Correct format: find [keyword]");
             }
 
             String keyword = userInput.substring(5).trim();
+            assert !keyword.isEmpty() : "Keyword should not be empty after trimming";
 
             // Delegate the task searching to TaskManager
             ArrayList<Task> matchingTasks = taskManager.findTasksBySubstring(keyword);
+            assert matchingTasks != null : "findTasksBySubstring() should not return null";
 
             StringBuilder result = new StringBuilder();
             if (matchingTasks.isEmpty()) {
@@ -279,6 +284,7 @@ public class CommandHandler {
             } else {
                 result.append("Here are the matching tasks in your list:\n");
                 for (int i = 0; i < matchingTasks.size(); i++) {
+                    assert matchingTasks.get(i) != null : "Task in the matching list should not be null";
                     result.append((i + 1) + "." + matchingTasks.get(i) + "\n");
                 }
             }

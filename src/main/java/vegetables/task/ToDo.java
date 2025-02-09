@@ -35,6 +35,7 @@ public class ToDo extends Task {
      */
     @Override
     public String toString() {
+        assert toString().matches("^T \\[[ X]\\] .+") : "toString() format is incorrect: " + toString();
         return "T [" + (isDone ? "X" : " ") + "] " + description;
     }
 
@@ -48,6 +49,8 @@ public class ToDo extends Task {
      */
     @Override
     public String toFileString() {
+        assert toFileString().matches("^TODO \\| [X0] \\| .+")
+                : "toFileString() format is incorrect: " + toFileString();
         return "TODO | " + (isDone ? "X" : "0") + " | " + description;
     }
 }
