@@ -60,9 +60,6 @@ public class CommandHandler {
      * @param userInput The command input provided by the user.
      * @return A response message indicating the result of executing the command.
      */
-
-    // Issue with 'wrong' indentation of cae/default statements that cannot be fixed.
-    @SuppressWarnings("CheckStyle")
     public String executeCommand(String userInput) {
         assert userInput != null : "User input should not be null";
 
@@ -70,20 +67,20 @@ public class CommandHandler {
         assert command != null : "Command should not be null";
 
         return switch (command) {
-            case HELP -> displayHelp();
-            case LIST -> listTasks();
-            case TODO -> handleAddToDo(userInput);
-            case DEADLINE -> handleAddDeadline(userInput);
-            case EVENT -> handleAddEvent(userInput, taskManager);
-            case MARK -> handleMarkTask(userInput);
-            case UNMARK -> handleUnmarkTask(userInput);
-            case FIND -> handleFindTask(userInput);
-            case DELETE -> handleDeleteTask(userInput);
-            case BYE -> {
-                handleExit();
-                yield "";
-            }
-            default -> "Unrecognised command!";
+        case HELP -> displayHelp();
+        case LIST -> listTasks();
+        case TODO -> handleAddToDo(userInput);
+        case DEADLINE -> handleAddDeadline(userInput);
+        case EVENT -> handleAddEvent(userInput, taskManager);
+        case MARK -> handleMarkTask(userInput);
+        case UNMARK -> handleUnmarkTask(userInput);
+        case FIND -> handleFindTask(userInput);
+        case DELETE -> handleDeleteTask(userInput);
+        case BYE -> {
+            handleExit();
+            yield "";
+        }
+        default -> "Unrecognised command!";
         };
     }
 

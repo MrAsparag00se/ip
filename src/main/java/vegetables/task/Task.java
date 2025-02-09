@@ -73,10 +73,6 @@ public abstract class Task {
      * @return A reconstructed Task object.
      * @throws VeggieException If the string format is invalid or the task type is unrecognized.
      */
-
-    // Issue with 'wrong' indentation of cae/default statements that cannot be fixed.
-    @SuppressWarnings("CheckStyle")
-
     public static Task fromFileString(String taskString) throws VeggieException {
         String[] parts = taskString.split(" \\| ");
 
@@ -92,14 +88,15 @@ public abstract class Task {
         assert description != null && !description.isEmpty() : "Task description cannot be null or empty";
 
         // Ensure valid task type and status
-        assert taskType.equals("TODO") || taskType.equals("DEADLINE") || taskType.equals("EVENT") : "Invalid task type: " + taskType;
+        assert taskType.equals("TODO") || taskType.equals("DEADLINE") || taskType.equals("EVENT")
+                : "Invalid task type: " + taskType;
         assert parts[1].equals("X") || parts[1].equals("0") : "Invalid status: " + parts[1];
 
         return switch (taskType) {
-            case "TODO" -> new ToDo(description, isDone);
-            case "DEADLINE" -> new Deadline(description, parts[3], isDone);
-            case "EVENT" -> new Event(description, parts[3], parts[4], isDone);
-            default -> null;
+        case "TODO" -> new ToDo(description, isDone);
+        case "DEADLINE" -> new Deadline(description, parts[3], isDone);
+        case "EVENT" -> new Event(description, parts[3], parts[4], isDone);
+        default -> null;
         };
     }
 }
