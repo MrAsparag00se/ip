@@ -40,6 +40,17 @@ public class MainWindow extends ScrollPane {
     @FXML
     public void initialize() {
         showFunFact();
+
+        // Add a listener to handle resizing dynamically if needed
+        scrollPane.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            // You can do any adjustments here when the width changes
+            System.out.println("Window resized to width: " + newWidth);
+        });
+
+        scrollPane.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            // Adjust if needed when the height changes
+            System.out.println("Window resized to height: " + newHeight);
+        });
     }
 
     private void showFunFact() {
@@ -52,10 +63,12 @@ public class MainWindow extends ScrollPane {
         String input = userInput.getText();
         String response = vegetablesGui.getResponse(input);
 
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
-                DialogBox.getVeggieDialog(response, veggieImage)
-        );
+        // Add user dialog (aligned to the right)
+        dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
+
+        // Add Veggie dialog (aligned to the left)
+        dialogContainer.getChildren().add(DialogBox.getVeggieDialog(response, veggieImage));
+
         userInput.clear();
 
         Platform.runLater(() -> scrollPane.setVvalue(1.0));

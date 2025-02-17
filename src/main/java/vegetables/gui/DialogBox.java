@@ -24,7 +24,7 @@ public class DialogBox extends HBox {
     @FXML
     private ImageView displayPicture;
 
-    private DialogBox(String text, Image img) {
+    private DialogBox(String text, Image img, boolean isUserDialog) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -36,6 +36,13 @@ public class DialogBox extends HBox {
 
         dialog.setText(text);
         displayPicture.setImage(img);
+
+        // Set alignment to the right for user and left for system (Veggie)
+        if (isUserDialog) {
+            this.setAlignment(Pos.TOP_RIGHT);
+        } else {
+            this.setAlignment(Pos.TOP_LEFT);
+        }
     }
 
     /**
@@ -56,7 +63,7 @@ public class DialogBox extends HBox {
      * @return A DialogBox instance displaying the user's message.
      */
     public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        return new DialogBox(text, img, true);
     }
 
     /**
@@ -70,7 +77,7 @@ public class DialogBox extends HBox {
      * @return A DialogBox instance displaying the system's message.
      */
     public static DialogBox getVeggieDialog(String text, Image img) {
-        var db = new DialogBox(text, img);
+        var db = new DialogBox(text, img, false);
         db.flip();
         return db;
     }
