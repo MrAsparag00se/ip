@@ -12,10 +12,8 @@ import javafx.application.Application;
  */
 public class Launcher {
     /**
-     * The main method that starts the JavaFX application.
-     * <p>
+     * Starts the JavaFX application.
      * Calls {@link Application#launch(Class, String...)} with {@link Main} as the application class.
-     * </p>
      *
      * @param args Command-line arguments passed to the application.
      */

@@ -146,8 +146,8 @@ public class TaskManager {
             throw new VeggieException("Task number out of range.");
         }
         Task task = tasks.get(taskNumber - 1);
-        task.markAsDone(); // Mark the task as done
-        return "Task marked as done: " + task; // Return message
+        task.markAsDone();
+        return "Task marked as done: " + task;
     }
 
     /**
@@ -190,7 +190,7 @@ public class TaskManager {
      * @return A list of tasks whose descriptions contain the substring.
      */
     public ArrayList<Task> findTasksBySubstring(String keyword) {
-        ArrayList<Task> matchingTasks = new ArrayList<>(); // List for storing matching tasks
+        ArrayList<Task> matchingTasks = new ArrayList<>();
         for (Task task : tasks) {
             if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
                 matchingTasks.add(task);

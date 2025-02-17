@@ -24,7 +24,7 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String by) throws VeggieException {
         super(description);
-        // Assertions to check validity
+
         assert description != null && !description.isEmpty() : "Deadline description cannot be null or empty";
         assert by != null && !by.isEmpty() : "Deadline cannot be null or empty";
 

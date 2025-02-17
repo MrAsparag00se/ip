@@ -16,8 +16,10 @@ import vegetables.task.Task;
  */
 public class Vegetables {
     /**
-     * Entry point of the Vegetables program.
-     * Displays a welcome message and runs a command loop to process user input.
+     * Starts the Vegetables program.
+     * Displays a welcome message and continuously processes user input
+     * until the user exits the program.
+     * Initializes task storage, task manager, and command handler.
      *
      * @param args Command-line arguments (not used).
      */

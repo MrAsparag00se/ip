@@ -35,7 +35,7 @@ public class Event extends Task {
         try {
             this.from = LocalDateTime.parse(from, inputFormatter);
             this.to = LocalDateTime.parse(to, inputFormatter);
-            // Validate the start time is before the end time
+
             assert this.from.isBefore(this.to) : "Start time cannot be after end time";
 
         } catch (DateTimeParseException e) {

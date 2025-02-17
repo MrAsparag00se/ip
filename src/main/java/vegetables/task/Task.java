@@ -76,14 +76,12 @@ public abstract class Task {
     public static Task fromFileString(String taskString) throws VeggieException {
         String[] parts = taskString.split(" \\| ");
 
-        // Ensure proper parts are present in the file string
         assert parts.length >= 3 : "File string should contain at least type, status, and description";
 
         String taskType = parts[0];
         boolean isDone = parts[1].equals("X");
         String description = parts[2];
 
-        // Ensure valid task type
         assert taskType != null && !taskType.isEmpty() : "Task type cannot be null or empty";
         assert description != null && !description.isEmpty() : "Task description cannot be null or empty";
 

@@ -153,12 +153,10 @@ public class CommandHandler {
 
             String taskDescription = parts[0].substring(9).trim();
             String by = parts[1].trim();
-            // Validate description is not empty
             if (taskDescription.isEmpty()) {
                 throw new VeggieException("Task description cannot be empty!");
             }
 
-            // Validate date format
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime deadlineDateTime = LocalDateTime.parse(by, formatter);
             if (deadlineDateTime.isBefore(LocalDateTime.now())) {
@@ -195,7 +193,6 @@ public class CommandHandler {
             String from = parts.length > 1 ? parts[1].split("/to")[0].trim() : "";
             String to = parts.length > 1 ? parts[1].split("/to")[1].trim() : "";
 
-            // Convert start and end time strings to LocalDateTime
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime fromDateTime = LocalDateTime.parse(from, formatter);
             LocalDateTime toDateTime = LocalDateTime.parse(to, formatter);
@@ -235,7 +232,7 @@ public class CommandHandler {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.markTaskAsDone(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
-            return "Task marked as done.\n" + listTasks(); // Return the updated task list
+            return "Task marked as done.\n" + listTasks();
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
@@ -246,7 +243,7 @@ public class CommandHandler {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.unmarkTask(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
-            return "Task marked as not done.\n" + listTasks(); // Return the updated task list
+            return "Task marked as not done.\n" + listTasks();
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
@@ -289,7 +286,7 @@ public class CommandHandler {
             assert taskNumber > 0 : "Task number should be positive";
             taskManager.deleteTask(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
-            return "Task deleted.\n" + listTasks(); // Return the updated task list
+            return "Task deleted.\n" + listTasks();
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
