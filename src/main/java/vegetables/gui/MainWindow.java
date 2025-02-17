@@ -1,5 +1,6 @@
 package vegetables.gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -18,6 +19,7 @@ import vegetables.util.FunFactGenerator;
 public class MainWindow extends ScrollPane {
     @FXML private VBox dialogContainer;
     @FXML private TextField userInput;
+    @FXML private ScrollPane scrollPane;
 
     private VegetablesGui vegetablesGui;
     private final Image userImage = new Image(getClass().getResourceAsStream("/images/User.png"));
@@ -55,6 +57,8 @@ public class MainWindow extends ScrollPane {
                 DialogBox.getVeggieDialog(response, veggieImage)
         );
         userInput.clear();
+
+        Platform.runLater(() -> scrollPane.setVvalue(1.0));
     }
 
 }
