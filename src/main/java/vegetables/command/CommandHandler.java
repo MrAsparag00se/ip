@@ -130,7 +130,7 @@ public class CommandHandler {
     private String handleAddToDo(String userInput) {
         assert userInput.startsWith("todo") : "Invalid ToDo command format";
         String taskDescription = "";
-        
+
         if (userInput.length() > 4) {
             taskDescription = userInput.substring(5).trim();
         }
@@ -286,13 +286,24 @@ public class CommandHandler {
 
     private String handleDeleteTask(String userInput) {
         try {
+            if (userInput.split(" ").length < 2 || userInput.split(" ")[1].isEmpty()) {
+                return "Error: Please specify a task number to delete.";
+            }
+
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             assert taskNumber > 0 : "Task number should be positive";
+
             taskManager.deleteTask(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
             return "Task deleted.\n" + listTasks();
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            return "Error: Task number must be a valid integer.";
+        } catch (IndexOutOfBoundsException e) {
+            return "Error: Invalid task index: " + userInput.split(" ")[1]; // Capture the task number in the error
+        } catch (VeggieException e) {
             return "Error: " + e.getMessage();
+        } catch (Exception e) {
+            return "Error: An unexpected error occurred.";
         }
     }
 }

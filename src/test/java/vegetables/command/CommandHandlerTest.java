@@ -538,7 +538,6 @@ public class CommandHandlerTest {
         // Stub getTasks() to return the current state of the list
         when(mockTaskManager.getTasks()).thenAnswer(invocation -> new ArrayList<>(tasks));
 
-        // When deleteTask is called, remove the task from the list
         try {
             doAnswer(invocation -> {
                 int taskNumber = invocation.getArgument(0); // 1-based index
@@ -549,13 +548,10 @@ public class CommandHandlerTest {
             throw new RuntimeException(e);
         }
 
-        // Stub toString() for the remaining task
         when(task2.toString()).thenReturn("[T][ ] Remaining Task");
 
-        // Execute command: delete task 1 (original task1)
         String result = handler.executeCommand("delete 1");
 
-        // Verify the response message shows the updated list with 1 task (task2)
         assertEquals(
                 "Task deleted.\nHere are the tasks in your list:\n1.[T][ ] Remaining Task\n",
                 result
@@ -573,7 +569,6 @@ public class CommandHandlerTest {
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
 
-        // TaskManager throws exception for invalid index
         try {
             doThrow(new IndexOutOfBoundsException("Invalid task index: 5"))
                     .when(mockTaskManager).deleteTask(5);
