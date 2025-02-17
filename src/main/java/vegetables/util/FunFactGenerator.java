@@ -8,6 +8,8 @@ import java.util.Random;
  * <p>
  * Collection of predefined fun facts and
  * selects one at random when requested.
+ *
+ * This class was created by ChatGPT.
  * </p>
  */
 public class FunFactGenerator {
