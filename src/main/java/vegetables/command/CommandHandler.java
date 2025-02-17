@@ -117,7 +117,7 @@ public class CommandHandler {
         if (tasks.isEmpty()) {
             result.append("No tasks added.\n");
         } else {
-            result.append("Here are the tasks in your list:\n");
+            result.append("🌅 Here are the crops we've harvested so far: 🌾\n");
             for (int i = 0; i < tasks.size(); i++) {
                 assert tasks.get(i) != null : "Task should not be null";
                 // Add 1 for 1-indexing
@@ -142,7 +142,7 @@ public class CommandHandler {
         }
         taskManager.addToDoTask(taskDescription);
         taskStorage.saveTasks(taskManager.getTasks());
-        return "Got it. I've added this task: " + taskDescription;
+        return "\uD83C\uDF3B Great! You've planted a new to-do task: " + taskDescription;
     }
 
     private String handleAddDeadline(String userInput) {
@@ -173,7 +173,7 @@ public class CommandHandler {
             taskManager.addDeadlineTask(taskDescription, by);
             taskStorage.saveTasks(taskManager.getTasks());
 
-            return "Got it. I've added this deadline task: " + taskDescription;
+            return "\uD83C\uDF3E Great! You've planted a new deadline task: " + taskDescription;
         } catch (DateTimeParseException e) {
             return "Error: Invalid time or time format. Use: yyyy-MM-dd HH:mm";
         } catch (VeggieException | IndexOutOfBoundsException e) {
@@ -220,7 +220,7 @@ public class CommandHandler {
                         + "\nNew event added: " + taskDescription
                         + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
             } else {
-                return "Got it. I've added this event task:\n" + taskDescription
+                return "\uD83C\uDF3B Great! You've planted a new event task: \n" + taskDescription
                         + "\nNow you have " + taskManager.getTasks().size() + " tasks in the list.";
             }
 
@@ -236,7 +236,8 @@ public class CommandHandler {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.markTaskAsDone(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
-            return "Task marked as done.\n" + listTasks();
+            return "✅ This task is fully grown! It's time to harvest it. Task marked as done. "
+                    + "🌾\n" + listTasks();
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
@@ -247,7 +248,8 @@ public class CommandHandler {
             int taskNumber = Integer.parseInt(userInput.split(" ")[1]);
             taskManager.unmarkTask(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
-            return "Task marked as not done.\n" + listTasks();
+            return "🌱 Oops! Looks like this task still needs some more time in the soil. "
+                    + "Task marked as not done. 🌾\n" + listTasks();
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
@@ -272,7 +274,8 @@ public class CommandHandler {
             if (matchingTasks.isEmpty()) {
                 result.append("No matching tasks found.\n");
             } else {
-                result.append("Here are the matching tasks in your list:\n");
+                result.append("\uD83D\uDD0D Searching through the garden beds "
+                        + "for your tasks... Here's what I found!\n");
                 for (int i = 0; i < matchingTasks.size(); i++) {
                     assert matchingTasks.get(i) != null : "Task in the matching list should not be null";
                     result.append((i + 1) + "." + matchingTasks.get(i) + "\n");
@@ -295,7 +298,8 @@ public class CommandHandler {
 
             taskManager.deleteTask(taskNumber);
             taskStorage.saveTasks(taskManager.getTasks());
-            return "Task deleted.\n" + listTasks();
+            return "🌿 Weeding time! The task has been pulled from the garden. 🧑‍🌾\n"
+                    + listTasks();
         } catch (NumberFormatException e) {
             return "Error: Task number must be a valid integer.";
         } catch (IndexOutOfBoundsException e) {

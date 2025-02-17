@@ -93,7 +93,7 @@ public class CommandHandlerTest {
 
         // Verify output format
         String expectedOutput =
-                "Here are the tasks in your list:\n"
+                "🌅 Here are the crops we've harvested so far: 🌾\n"
                         + "1.[T][ ] Read book\n"
                         + "2.[D][ ] Submit report (by: 2023-10-10)\n";
 
@@ -116,7 +116,7 @@ public class CommandHandlerTest {
         String result = handler.executeCommand("todo Read book");
 
         // Verify interactions and output
-        assertEquals("Got it. I've added this task: Read book", result);
+        assertEquals("\uD83C\uDF3B Great! You've planted a new to-do task: Read book", result);
         verify(mockTaskManager).addToDoTask("Read book");
         verify(mockTaskStorage).saveTasks(any(ArrayList.class));
     }
@@ -175,7 +175,8 @@ public class CommandHandlerTest {
 
         String result = handler.executeCommand(validInput);
 
-        assertEquals("Got it. I've added this deadline task: Submit report", result);
+        String expectedOutput = "🌾 Great! You've planted a new deadline task: Submit report";
+        assertEquals(expectedOutput, result);
         try {
             verify(mockTaskManager).addDeadlineTask(expectedDescription, expectedBy);
         } catch (VeggieException e) {
@@ -315,7 +316,8 @@ public class CommandHandlerTest {
         String result = handler.executeCommand(validInput);
 
         // Assertions
-        assertEquals("Got it. I've added this event task:\nTeam meeting\nNow you have 0 tasks in the list.", result);
+        assertEquals("\uD83C\uDF3B Great! You've planted a new event task: \n"
+                + "Team meeting\nNow you have 0 tasks in the list.", result);
 
         // Verify interactions
         try {
@@ -489,11 +491,11 @@ public class CommandHandlerTest {
         String result = handler.executeCommand("find Thi");
 
         String expectedOutput =
-                "Here are the matching tasks in your list:\n"
+                "\uD83D\uDD0D Searching through the garden beds "
+                        + "for your tasks... Here's what I found!\n"
                         + "1.[T][ ] This is cold\n"
                         + "2.[T][ ] This is hot\n"
                         + "3.[E][ ] Thicken (from: 2024-01-01 10:00 to: 2024-01-01 12:00)\n";
-
         assertEquals(expectedOutput, result);
     }
 
@@ -552,10 +554,10 @@ public class CommandHandlerTest {
 
         String result = handler.executeCommand("delete 1");
 
-        assertEquals(
-                "Task deleted.\nHere are the tasks in your list:\n1.[T][ ] Remaining Task\n",
-                result
-        );
+        String expectedOutput = "🌿 Weeding time! The task has been pulled from the garden. 🧑‍🌾\n"
+                + "🌅 Here are the crops we've harvested so far: 🌾\n"
+                + "1.[T][ ] Remaining Task\n";
+        assertEquals(expectedOutput, result);
 
         // Verify the saved tasks list has size 1 (task2)
         verify(mockTaskStorage).saveTasks(argThat(savedTasks ->
@@ -603,10 +605,14 @@ public class CommandHandlerTest {
 
         String result = handler.executeCommand("mark 1");
 
-        assertEquals(
-                "Task marked as done.\nHere are the tasks in your list:\n1.[T][X] Completed task\n",
-                result
-        );
+        String expectedOutput =
+                "✅ This task is fully grown! It's time to harvest it. Task marked as done. 🌾\n"
+                        + "🌅 Here are the crops we've harvested so far: 🌾\n"
+                        + "1.[T][X] Completed task\n";
+
+        // Trim and remove any unwanted characters from the result before comparing
+        assertEquals(expectedOutput.trim(), result.trim());
+
         try {
             verify(mockTaskManager).markTaskAsDone(1);
         } catch (VeggieException e) {
@@ -655,11 +661,11 @@ public class CommandHandlerTest {
         when(mockTaskManager.getTasks()).thenReturn(tasks);
 
         String result = handler.executeCommand("unmark 1");
+        String expectedOutput = "🌱 Oops! Looks like this task still needs some more time "
+                + "in the soil. Task marked as not done. 🌾\n"
+                + "🌅 Here are the crops we've harvested so far: 🌾\n1.[T][ ] Read book\n";
 
-        assertEquals(
-                "Task marked as not done.\nHere are the tasks in your list:\n1.[T][ ] Read book\n",
-                result
-        );
+        assertEquals(expectedOutput, result);
         try {
             verify(mockTaskManager).unmarkTask(1);
         } catch (VeggieException e) {

@@ -32,7 +32,6 @@ public class MainWindow extends ScrollPane {
         this.vegetablesGui = vegetablesGui;
     }
 
-    // NEW
     /**
      * Initializes the GUI and displays a fun fact when the chatbot starts.
      */
@@ -41,7 +40,6 @@ public class MainWindow extends ScrollPane {
         showFunFact();
     }
 
-    // NEW
     private void showFunFact() {
         String funFact = "🌱 Fun Fact: " + FunFactGenerator.getRandomFunFact();
         dialogContainer.getChildren().add(DialogBox.getVeggieDialog(funFact, veggieImage));
