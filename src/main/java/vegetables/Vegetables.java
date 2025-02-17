@@ -17,8 +17,7 @@ import vegetables.task.Task;
 public class Vegetables {
     /**
      * Starts the Vegetables program.
-     * Displays a welcome message and continuously processes user input
-     * until the user exits the program.
+     * Processes user input until the user exits the program.
      * Initializes task storage, task manager, and command handler.
      *
      * @param args Command-line arguments (not used).
@@ -29,18 +28,6 @@ public class Vegetables {
         TaskStorage taskStorage = new TaskStorage();
         ArrayList<Task> tasks = taskStorage.loadTasks();
         TaskManager taskManager = new TaskManager(tasks);
-
-        String veggieLogo =
-                " _  _  ____  ___  ____  ____   __    ____  __    ____  ___ \n"
-                        + "( \\/ )( ___)/ __)( ___)(_  _) /__\\  (  _ \\(  )  ( ___)/ __)\n"
-                        + " \\  /  )__)( (_-. )__)   )(  /(__)\\  ) _ < )(__  )__) \\__ \\\n"
-                        + "  \\/  (____)\\___/(____) (__)(__)(__)(____/(____)(____)(___/ \n";
-
-        System.out.println("____________________________________________________________");
-        System.out.println(" Hello! I'm Vegetables");
-        System.out.println(veggieLogo);
-        System.out.println(" What can I do for you?");
-        System.out.println("____________________________________________________________");
 
         CommandHandler commandHandler = new CommandHandler(taskManager, taskStorage);
 
