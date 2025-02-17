@@ -5,6 +5,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import vegetables.util.FunFactGenerator;
 
 /**
  * The controller for the main GUI window of the Vegetables application.
@@ -29,6 +30,21 @@ public class MainWindow extends ScrollPane {
      */
     public void setVegetablesGui(VegetablesGui vegetablesGui) {
         this.vegetablesGui = vegetablesGui;
+    }
+
+    // NEW
+    /**
+     * Initializes the GUI and displays a fun fact when the chatbot starts.
+     */
+    @FXML
+    public void initialize() {
+        showFunFact();
+    }
+
+    // NEW
+    private void showFunFact() {
+        String funFact = "🌱 Fun Fact: " + FunFactGenerator.getRandomFunFact();
+        dialogContainer.getChildren().add(DialogBox.getVeggieDialog(funFact, veggieImage));
     }
 
     @FXML

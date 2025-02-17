@@ -30,14 +30,27 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         try {
+            // Load FXML file
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/MainWindow.fxml"));
-            AnchorPane ap = fxmlLoader.load();
-            Scene scene = new Scene(ap);
+            AnchorPane root = fxmlLoader.load();
+
+            // Set up scene
+            Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Vegetables - Task Manager Chatbot");
-            fxmlLoader.<MainWindow>getController().setVegetablesGui(vegetablesGui);
+
+            // Get controller and set VegetablesGui instance
+            MainWindow controller = fxmlLoader.getController();
+            if (controller != null) {
+                controller.setVegetablesGui(vegetablesGui);
+            } else {
+                System.err.println("Error: MainWindow controller is null. Check FXML file.");
+            }
+
+            // Show GUI
             stage.show();
         } catch (IOException e) {
+            System.err.println("Failed to load MainWindow.fxml: " + e.getMessage());
             e.printStackTrace();
         }
     }
