@@ -139,21 +139,20 @@ public class CommandHandlerTest {
     }
 
     @Test
-    void executeCommand_addEmptyTodo_returnsSuccessWithEmptyDescription() {
+    void executeCommand_addEmptyTodo_returnsErrorForEmptyDescription() {
         TaskManager mockTaskManager = mock(TaskManager.class);
         TaskStorage mockTaskStorage = mock(TaskStorage.class);
 
-        // Allow empty task
         when(mockTaskManager.taskExists("")).thenReturn(false);
         when(mockTaskManager.getTasks()).thenReturn(new ArrayList<>());
 
         CommandHandler handler = new CommandHandler(mockTaskManager, mockTaskStorage);
 
         String result = handler.executeCommand("todo");
+        assertEquals("Error: Task description cannot be empty!", result);
 
-        assertEquals("Got it. I've added this task: ", result);
-        verify(mockTaskManager).addToDoTask("");
-        verify(mockTaskStorage).saveTasks(any(ArrayList.class));
+        verify(mockTaskManager, never()).addToDoTask("");
+        verify(mockTaskStorage, never()).saveTasks(any(ArrayList.class));
     }
 
     @Test

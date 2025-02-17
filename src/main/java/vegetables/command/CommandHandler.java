@@ -130,8 +130,12 @@ public class CommandHandler {
     private String handleAddToDo(String userInput) {
         assert userInput.startsWith("todo") : "Invalid ToDo command format";
         String taskDescription = "";
+        
         if (userInput.length() > 4) {
             taskDescription = userInput.substring(5).trim();
+        }
+        if (taskDescription.isEmpty()) {
+            return "Error: Task description cannot be empty!";
         }
         if (taskManager.taskExists(taskDescription)) {
             return "Duplicate task detected! Task already exists.";

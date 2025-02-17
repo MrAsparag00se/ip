@@ -42,4 +42,5 @@ public class MainWindow extends ScrollPane {
         );
         userInput.clear();
     }
+
 }
