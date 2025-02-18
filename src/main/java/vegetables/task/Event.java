@@ -27,8 +27,7 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) throws VeggieException {
         super(description);
-        // Assertions to check validity
-        assert description != null && !description.isEmpty() : "Event description cannot be null or empty";
+        assert !description.isEmpty() : "Event description cannot be null or empty";
         assert from != null && !from.isEmpty() : "Start time cannot be null or empty";
         assert to != null && !to.isEmpty() : "End time cannot be null or empty";
 
@@ -41,9 +40,6 @@ public class Event extends Task {
         } catch (DateTimeParseException e) {
             throw new VeggieException("Invalid date format! Use yyyy-MM-dd HH:mm (e.g., 2023-01-22 18:00)");
         }
-        // Ensure the times are valid after parsing
-        assert this.from != null && this.to != null : "Parsed from/to times cannot be null";
-
     }
 
     /**
@@ -58,6 +54,24 @@ public class Event extends Task {
     public Event(String description, String from, String to, boolean isDone) throws VeggieException {
         this(description, from, to);
         this.isDone = isDone;
+    }
+
+    /**
+     * Returns the raw start time of the event.
+     *
+     * @return The start time as a LocalDateTime object.
+     */
+    public LocalDateTime getFromDateTime() {
+        return from;
+    }
+
+    /**
+     * Returns the raw end time of the event.
+     *
+     * @return The end time as a LocalDateTime object.
+     */
+    public LocalDateTime getToDateTime() {
+        return to;
     }
 
     /**

@@ -114,10 +114,9 @@ public class TaskManager {
         for (Task task : tasks) {
             if (task instanceof Event) {
                 Event existingEvent = (Event) task;
-                LocalDateTime existingFrom = LocalDateTime.parse(existingEvent.getFrom(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                LocalDateTime existingTo = LocalDateTime.parse(existingEvent.getTo(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                // Use the raw LocalDateTime values directly
+                LocalDateTime existingFrom = existingEvent.getFromDateTime();
+                LocalDateTime existingTo = existingEvent.getToDateTime();
 
                 // Check if there's an overlap
                 if ((newFrom.isBefore(existingTo) && newTo.isAfter(existingFrom))) {
