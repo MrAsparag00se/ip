@@ -25,10 +25,10 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter:5.7.0'
 
     // JavaFX dependencies
-    implementation "org.openjfx:javafx-base:17.0.14:win"
-    implementation "org.openjfx:javafx-controls:17.0.14:win"
-    implementation "org.openjfx:javafx-fxml:17.0.14:win"
-    implementation "org.openjfx:javafx-graphics:17.0.14:win"
+    implementation "org.openjfx:javafx-base:17.0.14"
+    implementation "org.openjfx:javafx-controls:17.0.14"
+    implementation "org.openjfx:javafx-fxml:17.0.14"
+    implementation "org.openjfx:javafx-graphics:17.0.14"
 
     // Ensure the project uses JUnit 5
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
