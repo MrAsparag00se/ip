@@ -1,0 +1,3 @@
+TODO | X | buy vegetables for the contest later
+DEADLINE | 0 | make veggie pie | 2025-05-05 12:00
+EVENT | X | veg eating contest | 2025-05-05 12:00 | 2025-05-05 18:00
